@@ -1,4 +1,5 @@
-#include "FNPRootListController.h"
+#import "FNPRootListController.h"
+#import "NBPRootTableViewController.h"
 
 @implementation FNPRootListController
 
@@ -16,15 +17,21 @@
     return _specifiers;
 }
 
+- (void)viewFilters {
+    NBPRootTableViewController *vc = [[NBPRootTableViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if(![[[NSUserDefaults standardUserDefaults] stringForKey:@"ForwardNotifier-FirstUse"] isEqual:@"1"]) {
+    if(![[NSUserDefaults standardUserDefaults] boolForKey:@"ForwardNotifier-FirstUse"]) {
         if(@available(iOS 13, *)) {
             [self updateController];
         } else {
-            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"This tweak relies on a CC module!"
-                                                                           message:@"To enable or disable ForwardNotifier, you need to use the CC module. We recomend CC support to enable third party modules. This alert and any other that show up on settings will only show up once."
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController *alert = [UIAlertController
+                alertControllerWithTitle:@"This tweak relies on a CC module!"
+                                 message:@"To enable or disable ForwardNotifier, you need to use the CC module. We recomend CC support to enable third party modules. This alert and any other that show up on settings will only show up once."
+                          preferredStyle:UIAlertControllerStyleAlert];
             UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
                                                                     style:UIAlertActionStyleDefault
                                                                   handler:^(UIAlertAction *action){
@@ -35,16 +42,17 @@
         }
     }
     ((UITableView *)[self.view.subviews objectAtIndex:0]).keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
-    if([[[NSUserDefaults standardUserDefaults] stringForKey:@"HideSSH"] isEqual:@"1"]) {
+    if([[NSUserDefaults standardUserDefaults] boolForKey:@"HideSSH"]) {
         [self removeContiguousSpecifiers:@[ self.savedSpecifiers[@"hide1"] ] animated:YES];
         [self removeContiguousSpecifiers:@[ self.savedSpecifiers[@"hide2"] ] animated:YES];
         [self removeContiguousSpecifiers:@[ self.savedSpecifiers[@"hide3"] ] animated:YES];
         [self removeContiguousSpecifiers:@[ self.savedSpecifiers[@"hide4"] ] animated:YES];
     }
-    if([[[NSUserDefaults standardUserDefaults] stringForKey:@"HideSSH"] isEqual:@"0"]) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Possible exploit warning while using SSH"
-                                                                       message:@"While the text has been sanitized to avoid possible execution of commands, the text is sent 'as is' and this presents a possible security risk.\nIt is advised to use the Crossplatform Server as it's more secure"
-                                                                preferredStyle:UIAlertControllerStyleAlert];
+    if([[[NSUserDefaults standardUserDefaults] stringForKey:@"HideSSH"] isEqualToString:@"0"]) {
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:@"Possible exploit warning while using SSH"
+                             message:@"While the text has been sanitized to avoid possible execution of commands, the text is sent 'as is' and this presents a possible security risk.\nIt is advised to use the Crossplatform Server as it's more secure"
+                      preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
                                                                 style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction *action){
@@ -63,6 +71,10 @@
         [self removeContiguousSpecifiers:@[ self.savedSpecifiers[@"hide3"] ] animated:YES];
         [self removeContiguousSpecifiers:@[ self.savedSpecifiers[@"hide4"] ] animated:YES];
     }
+}
+
+- (void)applyNow {
+    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (__bridge CFStringRef) @"com.greg0109.forwardnotifierprefs.settingschanged", NULL, NULL, YES);
 }
 
 - (id)readPreferenceValue:(PSSpecifier *)specifier {
@@ -85,9 +97,10 @@
         if(![[[NSUserDefaults standardUserDefaults] stringForKey:@"ForwardNotifier-PCSpecifierWindows"] isEqual:@"1"]) {
             if(@available(iOS 13, *)) {
             } else {
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Crossplatform use is advised!"
-                                                                               message:@"Windows SSH support is buggy at the moment. Crossplatform server use is advised."
-                                                                        preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertController *alert = [UIAlertController
+                    alertControllerWithTitle:@"Crossplatform use is advised!"
+                                     message:@"Windows SSH support is buggy at the moment. Crossplatform server use is advised."
+                              preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
                                                                         style:UIAlertActionStyleDefault
                                                                       handler:^(UIAlertAction *action){
@@ -101,9 +114,10 @@
         if(![[[NSUserDefaults standardUserDefaults] stringForKey:@"ForwardNotifier-PCSpecifieriOS"] isEqual:@"1"]) {
             if(@available(iOS 13, *)) {
             } else {
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"iOS only supports SSH"
-                                                                               message:@"Since the crossplatform server uses python3, iOS as a receiver only supports SSH at the moment."
-                                                                        preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertController *alert = [UIAlertController
+                    alertControllerWithTitle:@"iOS only supports SSH"
+                                     message:@"Since the crossplatform server uses python3, iOS as a receiver only supports SSH at the moment."
+                              preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
                                                                         style:UIAlertActionStyleDefault
                                                                       handler:^(UIAlertAction *action){
@@ -125,9 +139,10 @@
         [self insertContiguousSpecifiers:@[ self.savedSpecifiers[@"hide3"] ] afterSpecifierID:@"hide2" animated:YES];
         [self insertContiguousSpecifiers:@[ self.savedSpecifiers[@"hide4"] ] afterSpecifierID:@"hide3" animated:YES];
         [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"HideSSH"];
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Possible exploit warning while using SSH"
-                                                                       message:@"While the text has been sanitized to avoid possible execution of commands, the text is sent 'as is' and this presents a possible security risk.\nIt is advised to use the Crossplatform Server as it's more secure"
-                                                                preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alert = [UIAlertController
+            alertControllerWithTitle:@"Possible exploit warning while using SSH"
+                             message:@"While the text has been sanitized to avoid possible execution of commands, the text is sent 'as is' and this presents a possible security risk.\nIt is advised to use the Crossplatform Server as it's more secure"
+                      preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
                                                                 style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction *action){
@@ -170,6 +185,7 @@
         welcomeController.modalInPresentation = YES;
         welcomeController.view.tintColor = [UIColor systemBlueColor];
         [self presentViewController:welcomeController animated:YES completion:nil];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ForwardNotifier-FirstUse"];
     }
 }
 

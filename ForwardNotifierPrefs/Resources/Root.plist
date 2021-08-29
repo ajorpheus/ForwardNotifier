@@ -54,6 +54,22 @@
 		</dict>
 		<dict>
 			<key>cell</key>
+			<string>PSLinkListCell</string>
+			<key>label</key>
+			<string>Notification Filters</string>
+			<key>action</key>
+			<string>viewFilters</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>applyNow</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>Apply Filters</string>
+		</dict>
+		<dict>
+			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
 			<string>Enable this option to get an error output of the notifications.&#xA;It should only be enabled if the tweak is not working properly.</string>
@@ -240,7 +256,7 @@
 			<key>footerText</key>
 			<string>This will send a test notification to the PC/iOS Device.&#xA;Please, make sure all the settings are correct and that the CC module is enabled before testing.</string>
 		</dict>
-		<dict>
+	<dict>
       <key>action</key>
       <string>testnotif</string>
       <key>cell</key>

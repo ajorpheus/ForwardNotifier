@@ -1,4 +1,7 @@
-# ForwardNotifier
+# ForwardNotifier + NotiBlock
+Wow so epic tweak yayyyy
+FYI NotiBlock has no license so im not violating haha
+
 Forward your notifications from your iOS device to your PC/iOS device!
 
 

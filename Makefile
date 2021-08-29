@@ -12,7 +12,7 @@ ForwardNotifier_FILES = Tweak.xm
 ForwardNotifier_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
-SUBPROJECTS += ForwardNotifier
+SUBPROJECTS += ForwardNotifierPrefs
 SUBPROJECTS += ForwardNotifierCC
 SUBPROJECTS += ForwardNotifierReceiver
 include $(THEOS_MAKE_PATH)/aggregate.mk

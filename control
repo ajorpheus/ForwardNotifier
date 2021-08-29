@@ -1,11 +1,11 @@
-Package: com.greg0109.forwardnotifier
-Name: ForwardNotifier
+Package: me.lau.forwardnotifier
+Name: ForwardNotifier + NotiBlock
 Depends: mobilesubstrate, sshpass, openssh, applist, preferenceloader, curl
-Conflict: com.yourepo.greg0109.forwardnotifier8
-Replaces: com.yourepo.greg0109.forwardnotifier8
-Version: 1.4.3
+Conflict: com.yourepo.greg0109.forwardnotifier8, com.greg0109.forwardnotifier
+Replaces: com.yourepo.greg0109.forwardnotifier8, com.greg0109.forwardnotifier
+Version: 1.0.0
 Architecture: iphoneos-arm
 Description: Forward Notifications to your PC!
-Maintainer: Greg0109
-Author: Greg0109
+Maintainer: Greg0109 and ren7995
+Author: Greg0109 and ren7995
 Section: Tweaks

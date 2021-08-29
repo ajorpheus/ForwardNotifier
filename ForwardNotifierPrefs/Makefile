@@ -5,9 +5,10 @@ include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = ForwardNotifier
 
-ForwardNotifier_FILES = FNPRootListController.m
+ForwardNotifier_FILES = $(wildcard *.m)
 ForwardNotifier_INSTALL_PATH = /Library/PreferenceBundles
 ForwardNotifier_FRAMEWORKS = UIKit
+ForwardNotifier_LIBRARIES = applist
 ForwardNotifier_PRIVATE_FRAMEWORKS = Preferences OnBoardingKit
 ForwardNotifier_CFLAGS = -fobjc-arc
 
