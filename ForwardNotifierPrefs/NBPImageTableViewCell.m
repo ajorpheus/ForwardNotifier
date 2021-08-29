@@ -16,7 +16,7 @@
         [self setSelectionStyle:UITableViewCellSelectionStyleNone];
         self.cellImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
 
-        NSBundle *bundle = [[NSBundle alloc] initWithPath:@"/Library/PreferenceBundles/NotiBlockPref.bundle"];
+        NSBundle *bundle = [[NSBundle alloc] initWithPath:@"/Library/PreferenceBundles/ForwardNotifier.bundle"];
         NSString *imagePath = [bundle pathForResource:@"example" ofType:@"png"];
         UIImage *myImage = [UIImage imageWithContentsOfFile:imagePath];
         self.cellImageView.contentMode = UIViewContentModeScaleAspectFit;

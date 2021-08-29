@@ -91,8 +91,10 @@ returns whether we are currently inbetween the start time and and time and on a 
 
 /**
 0 - do not block
-1 - soft block, show in lock screen
-2 - hard block, clear from notifications
+1 - Completely Block
+2 - Don't Forward
+3 - Notification Center + Forward
+4 - Notification Center Only
 **/
 + (int)blockTypeForBulletin:(BBBulletin *)bulletin {
     NSString *title = [bulletin.title lowercaseString];
@@ -138,7 +140,7 @@ returns whether we are currently inbetween the start time and and time and on a 
         message = @"";
     }
 
-    BOOL showInNotificationCenter = false;
+    int blockMode = 0;
     for(NotificationFilter *filter in allFilters) {
         //check for schedule and skip if not inside
         if(filter.onSchedule && ![self areWeCurrentlyInSchedule:filter.startTime arg2:filter.endTime arg3:filter.weekDays]) {
@@ -194,17 +196,11 @@ returns whether we are currently inbetween the start time and and time and on a 
             filtered = !filtered;
         }
 
-        if(filter.showInNotificationCenter) {
-            showInNotificationCenter = YES;
-        }
+        blockMode = filter.blockMode;
     }
 
     if(filtered) {
-        if(showInNotificationCenter) {
-            return 1;
-        } else {
-            return 2;
-        }
+        return blockMode + 1;
     } else {
         return 0;
     }

@@ -22,7 +22,8 @@ typedef NS_ENUM(NSUInteger, Section) {
     SectionFieldFilter = 2,
     SectionAppFilter = 3,
     SectionWhitelistMode = 4,
-    SectionBlockOnSchedule = 5
+    SectionBlockMode = 5,
+    SectionBlockOnSchedule = 6
 };
 
 @interface NBPAddViewController ()
@@ -38,6 +39,7 @@ typedef NS_ENUM(NSUInteger, Section) {
 @property DatePickerTableViewCell *endTimeCell;
 @property ButtonTableViewCell *appToBlockCell;
 @property SwitchTableViewCell *whitelistSwitchCell;
+@property PickerTableViewCell *blockModePickerCell;
 
 @property SwitchTableViewCell *scheduleSwitchCell;
 @property WeekDayTableViewCell *weekDayCell;
@@ -87,6 +89,12 @@ typedef NS_ENUM(NSUInteger, Section) {
     self.whitelistSwitchCell.switchLabel.text = @"Whitelist Mode";
     [self.whitelistSwitchCell setSwitchListener:self];
 
+    self.blockModePickerCell = [[PickerTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"blockModePickerCell"];
+    self.blockModePickerCell.options = [NSArray arrayWithObjects:@"Completely Block", @"Don't Forward", @"Notification Center", @"NC No Forward", nil];
+    self.blockModePickerCell.descriptionLabel.text = @"Filter Type";
+    self.blockModePickerCell.selectedLabel.text = (NSString *)self.blockModePickerCell.options[0];
+    self.blockModePickerCell.delegate = self;
+
     self.scheduleSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"scheduleswitchCell"];
     self.scheduleSwitchCell.switchLabel.text = @"Block on Schedule";
     [self.scheduleSwitchCell setSwitchListener:self];
@@ -116,6 +124,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.filterTextCell.textField.text = self.currentFilter.filterText;
         [self.blockTypePickerCell setPickerIndex:self.currentFilter.blockType];
         [self.notificationFilterFieldPickerCell setPickerIndex:self.currentFilter.filterType];
+        [self.blockModePickerCell setPickerIndex:self.currentFilter.blockMode];
 
         if(self.selectedApp != nil) {
             self.appToBlockCell.buttonTextLabel.text = self.selectedApp.appName;
@@ -133,6 +142,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.title = @"New Filter";
         self.currentFilter = [[NotificationFilter alloc] init];
         [self.notificationFilterFieldPickerCell setPickerIndex:0];
+        [self.blockModePickerCell setPickerIndex:0];
         saveButtonText = @"Create";
     }
     UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:saveButtonText style:UIBarButtonItemStylePlain target:self action:@selector(onTapSave:)];
@@ -163,6 +173,8 @@ typedef NS_ENUM(NSUInteger, Section) {
             return self.appToBlockCell;
         case SectionWhitelistMode:
             return self.whitelistSwitchCell;
+        case SectionBlockMode:
+            return self.blockModePickerCell;
         case SectionBlockOnSchedule:
             switch(indexPath.row) {
                 case 0:
@@ -197,6 +209,8 @@ typedef NS_ENUM(NSUInteger, Section) {
     switch(section) {
         case SectionWhitelistMode:
             return @"Invert the filter criteria: only notifications that match this will be allowed. Note that whitelist filters cannot be combined with any other filters for that app. If you need to whitelist multiple things, you will need to use a regex.\n\nExample: enable Whitelist Mode, select the regex filter, and enter “^(Tomer|Alex):” to block all notifications from an app that don't start with ”Tomer:” or ”Alex:”, blocking everything else.";
+        case SectionBlockMode:
+            return @"Notification Center: Prevent the notification from making sounds sound, waking your device, or showing banners. It will still show up on the lockscreen and be forwarded.NC No Forward: Same as Notification Center, but will not be forwarded";
         case SectionBlockOnSchedule:
             return @"Schedule when to activate this filter. The filter will only activate in the given timeframe on the selected days (in green). If the notification happens on a day that is red or outside the timeframe, it will not be blocked.";
     }
@@ -216,7 +230,7 @@ typedef NS_ENUM(NSUInteger, Section) {
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 6;
+    return 7;
 }
 
 - (void)switchChanged:(UISwitch *)sender {
@@ -265,6 +279,10 @@ typedef NS_ENUM(NSUInteger, Section) {
             }
             break;
         }
+        case SectionBlockMode:
+            if(indexPath.row == 0)
+                [self toggleViewVisibility:self.blockModePickerCell.picker];
+            break;
         case SectionAppFilter: {
             [self dismissKeyboard];
             AppChooserViewController *vc = [[AppChooserViewController alloc] init];
@@ -303,6 +321,9 @@ typedef NS_ENUM(NSUInteger, Section) {
                     break;
             }
             break;
+        }
+        case SectionBlockMode: {
+            if(indexPath.row == 0 && self.blockModePickerCell.picker.tag) return 200;
         }
         case SectionBlockOnSchedule: {
             switch(indexPath.row) {
@@ -382,6 +403,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.currentFilter.appToBlock = self.selectedApp;
         self.currentFilter.onSchedule = [self.scheduleSwitchCell.cellSwitch isOn];
         self.currentFilter.whitelistMode = [self.whitelistSwitchCell.cellSwitch isOn];
+        self.currentFilter.blockMode = [self.blockModePickerCell.picker selectedRowInComponent:0];
 
         self.currentFilter.startTime = self.startTimeCell.datePicker.date;
         self.currentFilter.endTime = self.endTimeCell.datePicker.date;

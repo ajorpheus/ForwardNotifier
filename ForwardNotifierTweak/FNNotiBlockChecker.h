@@ -15,13 +15,8 @@
 @end
 
 @class BBSectionIcon, BBAction, BBContent;
-@interface BBBulletin : NSObject
-@property (nonatomic, retain) NSString *subtitle;
-@property (nonatomic, retain) NSString *message;
-@property (nonatomic, retain) NSString *title;
-@property (nonatomic, retain) NSString *sectionID;
+@interface BBBulletin : BBBulletinRequest
 @property (nonatomic, retain) BBSectionIcon *icon;
-@property (nonatomic, retain) NSString *bulletinID;
 @property (nonatomic, retain) NSString *recordID;
 @property (nonatomic, retain) NSString *publisherBulletinID;
 @property (nonatomic, retain) NSString *sectionDisplayName;

@@ -264,12 +264,30 @@ void pushnotif(BOOL override) {
 %hook BBServer
 
 - (void)publishBulletin:(BBBulletin *)arg1 destinations:(unsigned long long)arg2 {
-    %orig;
-
-    int blockType = [FNNotiBlockChecker blockTypeForBulletin:arg1];
-	if (blockType != 0) {
+    /*
+    0 - do not block
+    1 - Completely Block
+    2 - Don't Forward
+    3 - Notification Center + Forward
+    4 - Notification Center Only
+    */
+	int blockType = [FNNotiBlockChecker blockTypeForBulletin: arg1];
+	if (blockType == 1) {
+        arg1.sound = nil;
+	    arg1.turnsOnDisplay = NO;
 		return;
 	}
+    %orig(arg1, arg2);
+
+	if (blockType == 3 || blockType == 4) {
+        arg1.sound = nil;
+	    arg1.turnsOnDisplay = NO;
+		[self _clearBulletinIDs:@[arg1.bulletinID] forSectionID:arg1.sectionID shouldSync:YES];
+	}
+    if(blockType == 4 || blockType == 2) {
+        return;
+    }
+
     title = arg1.content.title;
     message = arg1.content.message;
     bundleID = arg1.sectionID;
@@ -291,6 +309,34 @@ void pushnotif(BOOL override) {
 }
 
 %end
+
+
+/**
+Code to hide the banner dropdown view
+**/
+%hook NCNotificationShortLookViewController
+
+-(id)_initWithNotificationRequest:(id)arg1 revealingAdditionalContentOnPresentation:(BOOL)arg2 {
+	BBBulletin *bulletin = ((NCNotificationRequest *)arg1).bulletin;
+	NCNotificationShortLookViewController *temp = %orig;
+
+    int blockType = [FNNotiBlockChecker blockTypeForBulletin: bulletin];
+	if (blockType != 2 && blockType != 0) {
+		self.view.hidden = YES;
+		[self.view setUserInteractionEnabled:NO];
+	}
+	return temp;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	%orig;
+	if(self.view.hidden) {
+		[self dismissViewControllerAnimated:NO completion:nil];
+	}
+}
+
+%end
+
 
 %hook SpringBoard 
 - (void)applicationDidFinishLaunching:(id)arg1 {
