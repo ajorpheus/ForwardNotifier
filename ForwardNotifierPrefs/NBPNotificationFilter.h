@@ -10,7 +10,6 @@
 #import "NBPAppInfo.h"
 
 @interface NotificationFilter : NSObject <NSCopying>
-
 @property (nonatomic, strong) NSString *filterName;
 @property (nonatomic, strong) NSString *filterText;
 @property (nonatomic) NSInteger blockType;
@@ -25,5 +24,4 @@
 - (id)copyWithZone:(NSZone *)zone;
 - (NSDictionary *)encodeToDictionary;
 - (id)initWithDictionary:(NSDictionary *)dict;
-
 @end

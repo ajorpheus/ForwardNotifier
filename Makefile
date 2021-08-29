@@ -8,7 +8,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = ForwardNotifier
 
-ForwardNotifier_FILES = Tweak.xm
+ForwardNotifier_FILES = $(wildcard ForwardNotifierTweak/*.xm) $(wildcard ForwardNotifierTweak/*.m)
 ForwardNotifier_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk

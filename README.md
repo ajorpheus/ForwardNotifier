@@ -1,6 +1,9 @@
 # ForwardNotifier + NotiBlock
+ForwardNotifier with NotiBlock built in to filter the messages you want to forward. Also fixes a few bugs in preferences of ForwardNotifier, and cleans up the project structure
+
 Wow so epic tweak yayyyy
 FYI NotiBlock has no license so im not violating haha
+
 
 Forward your notifications from your iOS device to your PC/iOS device!
 

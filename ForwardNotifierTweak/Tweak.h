@@ -2,6 +2,7 @@
 #import <UIKit/UIControl.h>
 #import <UIKit/UIKit.h>
 #import <dlfcn.h>
+#import <objc/runtime.h>
 
 @interface NSTask : NSObject
 @property (copy) NSArray *arguments;
@@ -28,44 +29,7 @@
 - (void)applicationDidFinishLaunching:(id)arg1;
 @end
 
-@interface BBAction : NSObject
-
-+ (id)actionWithLaunchURL:(id)arg1 callblock:(/*^block*/ id)arg2;
-+ (id)actionWithLaunchBundleID:(id)arg1 callblock:(/*^block*/ id)arg2;
-+ (id)actionWithCallblock:(/*^block*/ id)arg1;
-+ (id)actionWithAppearance:(id)arg1;
-+ (id)actionWithLaunchURL:(id)arg1;
-+ (id)actionWithActivatePluginName:(id)arg1 activationContext:(id)arg2;
-+ (id)actionWithIdentifier:(id)arg1;
-+ (id)actionWithIdentifier:(id)arg1 title:(id)arg2;
-+ (id)actionWithLaunchBundleID:(id)arg1;
-@end
-
-@class BBContent;
-@interface BBContent : NSObject
-@property (nonatomic, retain) NSString *message;
-@property (nonatomic, retain) NSString *title;
-@end
-
 @interface BBSectionIcon : NSObject
-@end
-
-@interface BBBulletin : NSObject
-@property (nonatomic, retain) NSString *message;
-@property (nonatomic, retain) NSString *title;
-@property (nonatomic, retain) NSString *sectionID;
-@property (nonatomic, retain) BBSectionIcon *icon;
-@property (nonatomic, retain) NSString *bulletinID;
-@property (nonatomic, retain) NSString *recordID;
-@property (nonatomic, retain) NSString *publisherBulletinID;
-@property (nonatomic, retain) NSString *sectionDisplayName;
-@property (nonatomic, retain) NSDate *date;
-@property (nonatomic, copy) BBAction *defaultAction;
-@property (nonatomic, retain) BBContent *content;
-@end
-
-@interface BBServer
-- (void)publishBulletin:(id)arg1 destinations:(unsigned long long)arg2;
 @end
 
 @interface SBLockStateAggregator : NSObject
