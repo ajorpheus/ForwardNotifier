@@ -1,4 +1,5 @@
 ARCHS = arm64 arm64e
+SYSROOT = $(THEOS)/sdks/iPhoneOS.sdk
 
 include $(THEOS)/makefiles/common.mk
 

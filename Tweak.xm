@@ -104,7 +104,7 @@ BOOL isItLocked() {
   if (lockstateenabled) {
     locked = [[%c(SBLockStateAggregator) sharedInstance] lockState];
   } else {
-    locked = TRUE;
+    locked = YES;
   }
   return locked;
 }
@@ -136,7 +136,7 @@ void pushnotif(BOOL override) {
   if (!override) {
     isItLocked();
   } else {
-    locked = TRUE;
+    locked = YES;
   }
   if (methodspecifier == 0) { // SSH
       if ([[[NSUserDefaults standardUserDefaults] stringForKey:@"ForwardNotifier-Status"] isEqual:@"1"] && (locked)) {
@@ -263,10 +263,10 @@ void pushnotif(BOOL override) {
     if (![title containsString:@"ForwardNotifier"] && [arg1.date timeIntervalSinceNow] > -2) { //This helps avoid the notifications to get forwarded again after a respring, which makes them avoid respring loops. If notifications are 2 seconds old, then won't get forwarded.
       NSMutableDictionary *applist = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.greg0109.forwardnotifierblacklist"];
       if (![applist valueForKey:arg1.sectionID] || [[NSString stringWithFormat:@"%@",[applist valueForKey:arg1.sectionID]] isEqual:@"0"]) {
-        pushnotif(FALSE);
+        pushnotif(NO);
       }
     } else if ([title isEqualToString:@"ForwardNotifier Test"]) {
-      pushnotif(TRUE);
+      pushnotif(YES);
     }
   }
 }
@@ -279,12 +279,12 @@ void pushnotif(BOOL override) {
     NSString *messagenotif = notification.userInfo[@"message"];
     if ([titlenotif isEqualToString:@"ActivateForwardNotifier"]) {
       if ([messagenotif isEqualToString:@"true"]) {
-        [[NSUserDefaults standardUserDefaults] setBool:TRUE forKey:@"ForwardNotifier-Status"];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ForwardNotifier-Status"];
       } else if ([messagenotif isEqualToString:@"false"]) {
-        [[NSUserDefaults standardUserDefaults] setBool:FALSE forKey:@"ForwardNotifier-Status"];
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"ForwardNotifier-Status"];
       }
     } else {
-      [[NSUserDefaults standardUserDefaults] setBool:TRUE forKey:@"ForwardNotifier-Status"];
+      [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ForwardNotifier-Status"];
       title = @"ForwardNotifier Test";
       message = @"This is a test notification";
       testnotif(title,message);

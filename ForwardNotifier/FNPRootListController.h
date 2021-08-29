@@ -1,35 +1,34 @@
-#import <Preferences/PSListController.h>
-#import <Preferences/PSSpecifier.h>
 #import <AppList/AppList.h>
 #import <FrontBoardServices/FBSSystemService.h>
+#import <Preferences/PSListController.h>
+#import <Preferences/PSSpecifier.h>
 #import <SpringBoardServices/SBSRestartRenderServerAction.h>
 
 @interface FNPRootListController : PSListController
-@property (nonatomic,retain) NSMutableDictionary *savedSpecifiers;
+@property (nonatomic, retain) NSMutableDictionary *savedSpecifiers;
 @end
 
 typedef struct SBIconImageInfo {
-	CGSize size;
-	double scale;
-	double continuousCornerRadius;
+    CGSize size;
+    double scale;
+    double continuousCornerRadius;
 } SBIconImageInfo;
 
 @interface FBSSystemService (ForwardNotifier)
-+(id)sharedService;
--(void)sendActions:(id)arg1 withResult:(/*^block*/id)arg2 ;
++ (id)sharedService;
+- (void)sendActions:(id)arg1 withResult:(/*^block*/ id)arg2;
 @end
 
 @interface SBSRelaunchAction (ForwardNotifier)
-@property (nonatomic,copy,readonly) NSString * reason;
-@property (nonatomic,readonly) unsigned long long options;
-@property (nonatomic,retain,readonly) NSURL * targetURL;
-+(id)actionWithReason:(id)arg1 options:(unsigned long long)arg2 targetURL:(id)arg3 ;
--(unsigned long long)options;
--(NSString *)reason;
--(id)initWithReason:(id)arg1 options:(unsigned long long)arg2 targetURL:(id)arg3 ;
--(NSURL *)targetURL;
+@property (nonatomic, copy, readonly) NSString *reason;
+@property (nonatomic, readonly) unsigned long long options;
+@property (nonatomic, retain, readonly) NSURL *targetURL;
++ (id)actionWithReason:(id)arg1 options:(unsigned long long)arg2 targetURL:(id)arg3;
+- (unsigned long long)options;
+- (NSString *)reason;
+- (id)initWithReason:(id)arg1 options:(unsigned long long)arg2 targetURL:(id)arg3;
+- (NSURL *)targetURL;
 @end
-
 
 @interface NSDistributedNotificationCenter : NSNotificationCenter
 + (instancetype)defaultCenter;
@@ -38,12 +37,13 @@ typedef struct SBIconImageInfo {
 
 @interface OBButtonTray : UIView
 - (void)addButton:(id)arg1;
-- (void)addCaptionText:(id)arg1;;
+- (void)addCaptionText:(id)arg1;
+;
 @end
 
 @interface OBBoldTrayButton : UIButton
--(void)setTitle:(id)arg1 forState:(unsigned long long)arg2;
-+(id)buttonWithType:(long long)arg1;
+- (void)setTitle:(id)arg1 forState:(unsigned long long)arg2;
++ (id)buttonWithType:(long long)arg1;
 @end
 
 @interface OBWelcomeController : UIViewController

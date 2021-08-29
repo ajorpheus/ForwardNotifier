@@ -1,5 +1,6 @@
 ARCHS = arm64 arm64e
 FINALPACKAGE = 1
+SYSROOT = $(THEOS)/sdks/iPhoneOS.sdk
 
 INSTALL_TARGET_PROCESSES = SpringBoard
 

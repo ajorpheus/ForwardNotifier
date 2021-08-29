@@ -1,7 +1,12 @@
-#import <ControlCenterUIKit/CCUIToggleModule.h>
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+@interface CCUIToggleModule : NSObject
+- (void)refreshState;
+@end
 
 @interface ForwardNotifierCC : CCUIToggleModule {
-  BOOL _selected;
+    BOOL _selected;
 }
 
 @end
