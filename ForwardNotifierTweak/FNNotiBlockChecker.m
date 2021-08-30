@@ -90,12 +90,15 @@ returns whether we are currently inbetween the start time and and time and on a 
 }
 
 /**
-0 - Do not block
-1 - Completely Block
-2 - Notification Center
-+100 - forward
+struct FNBlockResult {
+    BOOL block;
+    BOOL forward;
+    BOOL showInNC;
+    BOOL wakeDevice;
+};
 **/
-+ (int)blockTypeForBulletin:(BBBulletin *)bulletin {
++ (struct FNBlockResult)blockTypeForBulletin:(BBBulletin *)bulletin {
+    struct FNBlockResult ret = {.block = NO, .forward = YES, .showInNC = NO, .wakeDevice = YES};
     NSString *title = [bulletin.title lowercaseString];
     NSString *subtitle = [bulletin.subtitle lowercaseString];
     NSString *message = [bulletin.message lowercaseString];
@@ -108,8 +111,7 @@ returns whether we are currently inbetween the start time and and time and on a 
     BOOL filtered = NO;
 
     if(filters == nil) {
-        //NSLog(@"NOTIBLOCK - No filters. returning");
-        return 100;
+        return ret;
     }
 
     //NSLog(@"NOTIBLOCK - loading all filters: %lu", (unsigned long)[filters count]);
@@ -139,8 +141,6 @@ returns whether we are currently inbetween the start time and and time and on a 
         message = @"";
     }
 
-    int blockMode = 0;
-    BOOL increment = false;
     for(NotificationFilter *filter in allFilters) {
         //check for schedule and skip if not inside
         if(filter.onSchedule && ![self areWeCurrentlyInSchedule:filter.startTime arg2:filter.endTime arg3:filter.weekDays]) {
@@ -189,8 +189,9 @@ returns whether we are currently inbetween the start time and and time and on a 
         if([self doesMessageMatchFilterType:titleMatches arg2:subtitleMatches arg3:messageMatches arg4:filter.filterType]) {
             //NSLog(@"NOTIBLOCK - filtering was matched");
             filtered = YES;
-            blockMode = filter.blockMode;
-            increment = filter.forward;
+            ret.forward = filter.forward;
+            ret.wakeDevice = filter.wakeDevice;
+            ret.showInNC = filter.showInNC;
         }
 
         if(filter.whitelistMode) {
@@ -199,11 +200,9 @@ returns whether we are currently inbetween the start time and and time and on a 
         }
     }
 
-    if(filtered) {
-        return blockMode + (increment ? 100 : 0);
-    } else {
-        return 100;
-    }
+    ret.block = filtered;
+
+    return ret;
 }
 
 @end

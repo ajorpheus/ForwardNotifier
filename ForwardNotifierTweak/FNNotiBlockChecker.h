@@ -1,6 +1,13 @@
 #import <Foundation/Foundation.h>
 #import "../ForwardNotifierPrefs/NBPNotificationFilter.h"
 
+struct FNBlockResult {
+    BOOL block;
+    BOOL forward;
+    BOOL showInNC;
+    BOOL wakeDevice;
+};
+
 @interface BBSound
 @end
 
@@ -60,7 +67,7 @@
 @end
 
 @interface FNNotiBlockChecker : NSObject
-+ (int)blockTypeForBulletin:(BBBulletin *)bulletin;
++ (struct FNBlockResult)blockTypeForBulletin:(BBBulletin *)bulletin;
 + (BOOL)areWeCurrentlyInSchedule:(NSDate *)startTime arg2:(NSDate *)endTime arg3:(NSArray *)weekdays;
 + (BOOL)doesMessageMatchFilterType:(BOOL)titleMatches arg2:(BOOL)subtitleMatches arg3:(BOOL)messageMatches arg4:(int)filterType;
 + (void)reloadFilters;

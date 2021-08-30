@@ -39,8 +39,10 @@ typedef NS_ENUM(NSUInteger, Section) {
 @property DatePickerTableViewCell *endTimeCell;
 @property ButtonTableViewCell *appToBlockCell;
 @property SwitchTableViewCell *whitelistSwitchCell;
-@property PickerTableViewCell *blockModePickerCell;
+
 @property SwitchTableViewCell *forwardingSwitchCell;
+@property SwitchTableViewCell *showInNCSwitchCell;
+@property SwitchTableViewCell *wakeDeviceSwitchCell;
 
 @property SwitchTableViewCell *scheduleSwitchCell;
 @property WeekDayTableViewCell *weekDayCell;
@@ -67,7 +69,7 @@ typedef NS_ENUM(NSUInteger, Section) {
 
     self.notificationFilterFieldPickerCell = [[PickerTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"filterFieldPickerCell"];
     self.notificationFilterFieldPickerCell.options = [NSArray arrayWithObjects:@"Any Field", @"The Title", @"The Subtitle", @"The Message", nil];
-    self.notificationFilterFieldPickerCell.descriptionLabel.text = @"Block If";
+    self.notificationFilterFieldPickerCell.descriptionLabel.text = @"Match If";
     self.notificationFilterFieldPickerCell.selectedLabel.text = (NSString *)self.notificationFilterFieldPickerCell.options[0];
     self.notificationFilterFieldPickerCell.delegate = self;
 
@@ -90,15 +92,17 @@ typedef NS_ENUM(NSUInteger, Section) {
     self.whitelistSwitchCell.switchLabel.text = @"Whitelist Mode";
     [self.whitelistSwitchCell setSwitchListener:self];
 
-    self.blockModePickerCell = [[PickerTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"blockModePickerCell"];
-    self.blockModePickerCell.options = [NSArray arrayWithObjects:@"Do not Block", @"Completely Block", @"Notification Center", nil];
-    self.blockModePickerCell.descriptionLabel.text = @"Filter Type";
-    self.blockModePickerCell.selectedLabel.text = (NSString *)self.blockModePickerCell.options[0];
-    self.blockModePickerCell.delegate = self;
-
     self.forwardingSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"forwardingSwitchCell"];
     self.forwardingSwitchCell.switchLabel.text = @"Forward";
     [self.forwardingSwitchCell setSwitchListener:self];
+
+    self.showInNCSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"showInNCSwitchCell"];
+    self.showInNCSwitchCell.switchLabel.text = @"Show in NC";
+    [self.showInNCSwitchCell setSwitchListener:self];
+
+    self.wakeDeviceSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"wakeDeviceSwitchCell"];
+    self.wakeDeviceSwitchCell.switchLabel.text = @"Wake Device";
+    [self.wakeDeviceSwitchCell setSwitchListener:self];
 
     self.scheduleSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"scheduleswitchCell"];
     self.scheduleSwitchCell.switchLabel.text = @"Block on Schedule";
@@ -129,8 +133,9 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.filterTextCell.textField.text = self.currentFilter.filterText;
         [self.blockTypePickerCell setPickerIndex:self.currentFilter.blockType];
         [self.notificationFilterFieldPickerCell setPickerIndex:self.currentFilter.filterType];
-        [self.blockModePickerCell setPickerIndex:self.currentFilter.blockMode];
         [self.forwardingSwitchCell.cellSwitch setOn:self.currentFilter.forward];
+        [self.showInNCSwitchCell.cellSwitch setOn:self.currentFilter.showInNC];
+        [self.wakeDeviceSwitchCell.cellSwitch setOn:self.currentFilter.wakeDevice];
 
         if(self.selectedApp != nil) {
             self.appToBlockCell.buttonTextLabel.text = self.selectedApp.appName;
@@ -148,7 +153,6 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.title = @"New Filter";
         self.currentFilter = [[NotificationFilter alloc] init];
         [self.notificationFilterFieldPickerCell setPickerIndex:0];
-        [self.blockModePickerCell setPickerIndex:0];
         [self.forwardingSwitchCell.cellSwitch setOn:YES];
         saveButtonText = @"Create";
     }
@@ -181,10 +185,14 @@ typedef NS_ENUM(NSUInteger, Section) {
         case SectionWhitelistMode:
             return self.whitelistSwitchCell;
         case SectionBlockMode:
-            if(indexPath.row == 0)
-                return self.blockModePickerCell;
-            else
-                return self.forwardingSwitchCell;
+            switch(indexPath.row) {
+                case 0:
+                    return self.forwardingSwitchCell;
+                case 1:
+                    return self.showInNCSwitchCell;
+                case 2:
+                    return self.wakeDeviceSwitchCell;
+            }
         case SectionBlockOnSchedule:
             switch(indexPath.row) {
                 case 0:
@@ -218,7 +226,7 @@ typedef NS_ENUM(NSUInteger, Section) {
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     switch(section) {
         case SectionWhitelistMode:
-            return @"Invert the filter criteria: only notifications that match this will be allowed. Note that whitelist filters cannot be combined with any other filters for that app. If you need to whitelist multiple things, you will need to use a regex.\n\nExample: enable Whitelist Mode, select the regex filter, and enter “^(Tomer|Alex):” to block all notifications from an app that don't start with ”Tomer:” or ”Alex:”, blocking everything else.";
+            return @"Invert the filter criteria: only notifications that match this will have the action combination executed. Note that whitelist filters cannot be combined with any other filters for that app. If you need to whitelist multiple things, you will need to use a regex.\n\nExample: enable Whitelist Mode, select the regex filter, and enter “^(Tomer|Alex):” to block all actions for notifications from an app that don't start with ”Tomer:” or ”Alex:”, ignoring everything else.";
         case SectionBlockMode:
             return @"Notification Center: Prevent the notification from making sounds sound, waking your device, or showing banners. It will still show up on the lockscreen.";
         case SectionBlockOnSchedule:
@@ -233,7 +241,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         case SectionFieldFilter:
             return 3;
         case SectionBlockMode:
-            return 2;
+            return 3;
         case SectionBlockOnSchedule:
             return (self.scheduleSwitchCell.cellSwitch.isOn ? 4 : 1);
         default:
@@ -291,10 +299,6 @@ typedef NS_ENUM(NSUInteger, Section) {
             }
             break;
         }
-        case SectionBlockMode:
-            if(indexPath.row == 0)
-                [self toggleViewVisibility:self.blockModePickerCell.picker];
-            break;
         case SectionAppFilter: {
             [self dismissKeyboard];
             AppChooserViewController *vc = [[AppChooserViewController alloc] init];
@@ -333,9 +337,6 @@ typedef NS_ENUM(NSUInteger, Section) {
                     break;
             }
             break;
-        }
-        case SectionBlockMode: {
-            if(indexPath.row == 0 && self.blockModePickerCell.picker.tag) return 200;
         }
         case SectionBlockOnSchedule: {
             switch(indexPath.row) {
@@ -415,8 +416,10 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.currentFilter.appToBlock = self.selectedApp;
         self.currentFilter.onSchedule = [self.scheduleSwitchCell.cellSwitch isOn];
         self.currentFilter.whitelistMode = [self.whitelistSwitchCell.cellSwitch isOn];
-        self.currentFilter.blockMode = [self.blockModePickerCell.picker selectedRowInComponent:0];
+
         self.currentFilter.forward = [self.forwardingSwitchCell.cellSwitch isOn];
+        self.currentFilter.showInNC = [self.showInNCSwitchCell.cellSwitch isOn];
+        self.currentFilter.wakeDevice = [self.wakeDeviceSwitchCell.cellSwitch isOn];
 
         self.currentFilter.startTime = self.startTimeCell.datePicker.date;
         self.currentFilter.endTime = self.endTimeCell.datePicker.date;

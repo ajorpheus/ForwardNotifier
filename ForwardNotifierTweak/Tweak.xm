@@ -264,30 +264,27 @@ void pushnotif(BOOL override) {
 %hook BBServer
 
 - (void)publishBulletin:(BBBulletin *)arg1 destinations:(unsigned long long)arg2 {
-    /*
-    0 - Do not block
-    1 - Completely Block
-    2 - Notification Center
-    */
-	int blockType = [FNNotiBlockChecker blockTypeForBulletin: arg1];
+	struct FNBlockResult blockType = [FNNotiBlockChecker blockTypeForBulletin:arg1];
 
-	if (blockType % 100 == 1) {
-        arg1.sound = nil;
-        arg1.turnsOnDisplay = NO;
-        %orig(arg1, arg2);
-        [self _clearBulletinIDs:@[arg1.bulletinID] forSectionID:arg1.sectionID shouldSync:YES];
-		if(blockType < 101)
+    BOOL wantsToBeForwarded = !blockType.block || blockType.forward;
+    if(blockType.block) {
+        if(!blockType.wakeDevice) {
+            arg1.sound = nil;
+            arg1.turnsOnDisplay = NO;
+        }
+
+        if(!blockType.wakeDevice && !blockType.showInNC && !wantsToBeForwarded)
             return;
-	}
-
-    if(blockType % 100 == 2) {
-        arg1.sound = nil;
-        arg1.turnsOnDisplay = NO;
     }
-    if(blockType % 100 != 1)
-	    %orig(arg1, arg2);
 
-    if(blockType < 100) return;
+    if(!blockType.block || (blockType.wakeDevice || blockType.showInNC)) {
+        %orig(arg1, arg2);
+        if(blockType.block && !blockType.showInNC) {
+            [self _clearBulletinIDs:@[arg1.bulletinID] forSectionID:arg1.sectionID shouldSync:YES];
+        }
+    }
+
+    if(!wantsToBeForwarded) return;
 
     title = arg1.content.title;
     message = arg1.content.message;
@@ -321,9 +318,8 @@ Code to hide the banner dropdown view
 	BBBulletin *bulletin = ((NCNotificationRequest *)arg1).bulletin;
 	NCNotificationShortLookViewController *temp = %orig;
 
-    int blockType = [FNNotiBlockChecker blockTypeForBulletin: bulletin];
-	if (blockType % 100 != 0) {
-        NSLog(@"VIEW APPEAR HIDING");
+    struct FNBlockResult blockType = [FNNotiBlockChecker blockTypeForBulletin:bulletin];
+	if (blockType.block && !blockType.wakeDevice) {
 		self.view.hidden = YES;
 		[self.view setUserInteractionEnabled:NO];
 	}

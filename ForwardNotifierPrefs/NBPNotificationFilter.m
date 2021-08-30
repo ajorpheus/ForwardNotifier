@@ -23,6 +23,8 @@
     copy.whitelistMode = self.whitelistMode;
     copy.blockMode = self.blockMode;
     copy.forward = self.forward;
+    copy.wakeDevice = self.wakeDevice;
+    copy.showInNC = self.showInNC;
     copy.weekDays = [NSMutableArray arrayWithArray:self.weekDays];
     copy.filterName = self.filterName;
     return copy;
@@ -46,6 +48,8 @@
         self.whitelistMode = [((NSNumber *)[dict objectForKey:@"whitelistMode"]) boolValue];
         self.blockMode = [((NSNumber *)[dict objectForKey:@"blockMode"]) intValue];
         self.forward = [((NSNumber *)[dict objectForKey:@"forward"]) boolValue];
+        self.wakeDevice = [((NSNumber *)[dict objectForKey:@"wakeDevice"]) boolValue];
+        self.showInNC = [((NSNumber *)[dict objectForKey:@"showInNC"]) boolValue];
 
         self.startTime = [dict objectForKey:@"startTime"];
         self.endTime = [dict objectForKey:@"endTime"];
@@ -65,6 +69,10 @@
                                                          [NSNumber numberWithInt:self.blockMode], @"blockMode",
                                                          [NSNumber numberWithBool:self.forward],
                                                          @"forward",
+                                                         [NSNumber numberWithBool:self.wakeDevice],
+                                                         @"wakeDevice",
+                                                         [NSNumber numberWithBool:self.showInNC],
+                                                         @"showInNC",
                                                          self.startTime, @"startTime",
                                                          self.endTime, @"endTime",
                                                          self.weekDays, @"weekDays",
