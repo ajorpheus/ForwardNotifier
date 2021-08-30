@@ -1,3 +1,5 @@
 .theos/
 packages
 tmp
+.DS_Store
+
