@@ -265,28 +265,21 @@ void pushnotif(BOOL override) {
 
 - (void)publishBulletin:(BBBulletin *)arg1 destinations:(unsigned long long)arg2 {
     /*
-    0 - do not block
+    0 - Do not block
     1 - Completely Block
-    2 - Don't Forward
-    3 - Notification Center + Forward
-    4 - Notification Center Only
+    2 - Notification Center
     */
 	int blockType = [FNNotiBlockChecker blockTypeForBulletin: arg1];
 	if (blockType == 1) {
-        arg1.sound = nil;
-	    arg1.turnsOnDisplay = NO;
+        [self _clearBulletinIDs:@[arg1.bulletinID] forSectionID:arg1.sectionID shouldSync:YES];
 		return;
 	}
-    %orig(arg1, arg2);
 
-	if (blockType == 3 || blockType == 4) {
+    if(blockType == 2) {
         arg1.sound = nil;
-	    arg1.turnsOnDisplay = NO;
-		[self _clearBulletinIDs:@[arg1.bulletinID] forSectionID:arg1.sectionID shouldSync:YES];
-	}
-    if(blockType == 4 || blockType == 2) {
-        return;
+        arg1.turnsOnDisplay = NO;
     }
+	%orig(arg1, arg2);
 
     title = arg1.content.title;
     message = arg1.content.message;

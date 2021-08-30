@@ -90,11 +90,9 @@ returns whether we are currently inbetween the start time and and time and on a 
 }
 
 /**
-0 - do not block
+0 - Do not block
 1 - Completely Block
-2 - Don't Forward
-3 - Notification Center + Forward
-4 - Notification Center Only
+2 - Notification Center
 **/
 + (int)blockTypeForBulletin:(BBBulletin *)bulletin {
     NSString *title = [bulletin.title lowercaseString];
@@ -200,7 +198,7 @@ returns whether we are currently inbetween the start time and and time and on a 
     }
 
     if(filtered) {
-        return blockMode + 1;
+        return blockMode;
     } else {
         return 0;
     }

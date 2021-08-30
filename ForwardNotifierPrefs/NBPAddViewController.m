@@ -90,7 +90,7 @@ typedef NS_ENUM(NSUInteger, Section) {
     [self.whitelistSwitchCell setSwitchListener:self];
 
     self.blockModePickerCell = [[PickerTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"blockModePickerCell"];
-    self.blockModePickerCell.options = [NSArray arrayWithObjects:@"Completely Block", @"Don't Forward", @"Notification Center", @"NC No Forward", nil];
+    self.blockModePickerCell.options = [NSArray arrayWithObjects:@"Do not Block", @"Completely Block", @"Notification Center", nil];
     self.blockModePickerCell.descriptionLabel.text = @"Filter Type";
     self.blockModePickerCell.selectedLabel.text = (NSString *)self.blockModePickerCell.options[0];
     self.blockModePickerCell.delegate = self;
@@ -210,7 +210,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         case SectionWhitelistMode:
             return @"Invert the filter criteria: only notifications that match this will be allowed. Note that whitelist filters cannot be combined with any other filters for that app. If you need to whitelist multiple things, you will need to use a regex.\n\nExample: enable Whitelist Mode, select the regex filter, and enter “^(Tomer|Alex):” to block all notifications from an app that don't start with ”Tomer:” or ”Alex:”, blocking everything else.";
         case SectionBlockMode:
-            return @"Notification Center: Prevent the notification from making sounds sound, waking your device, or showing banners. It will still show up on the lockscreen and be forwarded.NC No Forward: Same as Notification Center, but will not be forwarded";
+            return @"Notification Center: Prevent the notification from making sounds sound, waking your device, or showing banners. It will still show up on the lockscreen.";
         case SectionBlockOnSchedule:
             return @"Schedule when to activate this filter. The filter will only activate in the given timeframe on the selected days (in green). If the notification happens on a day that is red or outside the timeframe, it will not be blocked.";
     }
