@@ -93,6 +93,7 @@ returns whether we are currently inbetween the start time and and time and on a 
 0 - Do not block
 1 - Completely Block
 2 - Notification Center
++100 - forward
 **/
 + (int)blockTypeForBulletin:(BBBulletin *)bulletin {
     NSString *title = [bulletin.title lowercaseString];
@@ -102,13 +103,13 @@ returns whether we are currently inbetween the start time and and time and on a 
     NSString *sectionId = bulletin.sectionID;
 
     // //NSLog(@"NOTIBLOCK - Entered publish bulletin for %@ with ID: %@ ", sectionId, bulletinID);
-    ////NSLog(@"NOTIBLOCK - BulletinID:%@         Title: %@      Subtitle: %@         Message: %@", bulletinID, title, subtitle, message );
+    //NSLog(@"NOTIBLOCK - BulletinID:%@         Title: %@      Subtitle: %@         Message: %@", bulletinID, title, subtitle, message);
 
     BOOL filtered = NO;
 
     if(filters == nil) {
         //NSLog(@"NOTIBLOCK - No filters. returning");
-        return 0;
+        return 100;
     }
 
     //NSLog(@"NOTIBLOCK - loading all filters: %lu", (unsigned long)[filters count]);
@@ -139,6 +140,7 @@ returns whether we are currently inbetween the start time and and time and on a 
     }
 
     int blockMode = 0;
+    BOOL increment = false;
     for(NotificationFilter *filter in allFilters) {
         //check for schedule and skip if not inside
         if(filter.onSchedule && ![self areWeCurrentlyInSchedule:filter.startTime arg2:filter.endTime arg3:filter.weekDays]) {
@@ -187,20 +189,20 @@ returns whether we are currently inbetween the start time and and time and on a 
         if([self doesMessageMatchFilterType:titleMatches arg2:subtitleMatches arg3:messageMatches arg4:filter.filterType]) {
             //NSLog(@"NOTIBLOCK - filtering was matched");
             filtered = YES;
+            blockMode = filter.blockMode;
+            increment = filter.forward;
         }
 
         if(filter.whitelistMode) {
             //NSLog(@"NOTIBLOCK - whitelist Mode on");
             filtered = !filtered;
         }
-
-        blockMode = filter.blockMode;
     }
 
     if(filtered) {
-        return blockMode;
+        return blockMode + (increment ? 100 : 0);
     } else {
-        return 0;
+        return 100;
     }
 }
 

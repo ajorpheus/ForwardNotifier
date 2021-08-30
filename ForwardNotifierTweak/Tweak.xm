@@ -270,16 +270,21 @@ void pushnotif(BOOL override) {
     2 - Notification Center
     */
 	int blockType = [FNNotiBlockChecker blockTypeForBulletin: arg1];
-	if (blockType == 1) {
-        [self _clearBulletinIDs:@[arg1.bulletinID] forSectionID:arg1.sectionID shouldSync:YES];
-		return;
+    NSLog(@"PUBLISH: %d %d", blockType, blockType % 100);
+
+	if (blockType % 100 == 1) {
+		if(blockType < 101)
+            return;
 	}
 
-    if(blockType == 2) {
+    if(blockType % 100 == 2) {
         arg1.sound = nil;
         arg1.turnsOnDisplay = NO;
     }
-	%orig(arg1, arg2);
+    if(blockType % 100 != 1)
+	    %orig(arg1, arg2);
+
+    if(blockType < 100) return;
 
     title = arg1.content.title;
     message = arg1.content.message;
@@ -314,7 +319,8 @@ Code to hide the banner dropdown view
 	NCNotificationShortLookViewController *temp = %orig;
 
     int blockType = [FNNotiBlockChecker blockTypeForBulletin: bulletin];
-	if (blockType != 2 && blockType != 0) {
+    NSLog(@"%d %d", blockType, blockType % 100);
+	if (blockType % 100 != 0) {
 		self.view.hidden = YES;
 		[self.view setUserInteractionEnabled:NO];
 	}

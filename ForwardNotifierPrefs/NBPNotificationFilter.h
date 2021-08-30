@@ -17,6 +17,7 @@
 @property (nonatomic, strong) AppInfo *appToBlock;
 @property (nonatomic) BOOL onSchedule;
 @property (nonatomic) BOOL whitelistMode;
+@property (nonatomic) BOOL forward;
 @property (nonatomic) NSInteger blockMode;
 @property (nonatomic, strong) NSDate *startTime;
 @property (nonatomic, strong) NSDate *endTime;

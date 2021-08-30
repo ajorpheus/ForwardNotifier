@@ -40,6 +40,7 @@ typedef NS_ENUM(NSUInteger, Section) {
 @property ButtonTableViewCell *appToBlockCell;
 @property SwitchTableViewCell *whitelistSwitchCell;
 @property PickerTableViewCell *blockModePickerCell;
+@property SwitchTableViewCell *forwardingSwitchCell;
 
 @property SwitchTableViewCell *scheduleSwitchCell;
 @property WeekDayTableViewCell *weekDayCell;
@@ -95,6 +96,10 @@ typedef NS_ENUM(NSUInteger, Section) {
     self.blockModePickerCell.selectedLabel.text = (NSString *)self.blockModePickerCell.options[0];
     self.blockModePickerCell.delegate = self;
 
+    self.forwardingSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"forwardingSwitchCell"];
+    self.forwardingSwitchCell.switchLabel.text = @"Forward";
+    [self.forwardingSwitchCell setSwitchListener:self];
+
     self.scheduleSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"scheduleswitchCell"];
     self.scheduleSwitchCell.switchLabel.text = @"Block on Schedule";
     [self.scheduleSwitchCell setSwitchListener:self];
@@ -125,6 +130,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         [self.blockTypePickerCell setPickerIndex:self.currentFilter.blockType];
         [self.notificationFilterFieldPickerCell setPickerIndex:self.currentFilter.filterType];
         [self.blockModePickerCell setPickerIndex:self.currentFilter.blockMode];
+        [self.forwardingSwitchCell.cellSwitch setOn:self.currentFilter.forward];
 
         if(self.selectedApp != nil) {
             self.appToBlockCell.buttonTextLabel.text = self.selectedApp.appName;
@@ -143,6 +149,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.currentFilter = [[NotificationFilter alloc] init];
         [self.notificationFilterFieldPickerCell setPickerIndex:0];
         [self.blockModePickerCell setPickerIndex:0];
+        [self.forwardingSwitchCell.cellSwitch setOn:YES];
         saveButtonText = @"Create";
     }
     UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:saveButtonText style:UIBarButtonItemStylePlain target:self action:@selector(onTapSave:)];
@@ -174,7 +181,10 @@ typedef NS_ENUM(NSUInteger, Section) {
         case SectionWhitelistMode:
             return self.whitelistSwitchCell;
         case SectionBlockMode:
-            return self.blockModePickerCell;
+            if(indexPath.row == 0)
+                return self.blockModePickerCell;
+            else
+                return self.forwardingSwitchCell;
         case SectionBlockOnSchedule:
             switch(indexPath.row) {
                 case 0:
@@ -222,6 +232,8 @@ typedef NS_ENUM(NSUInteger, Section) {
     switch(section) {
         case SectionFieldFilter:
             return 3;
+        case SectionBlockMode:
+            return 2;
         case SectionBlockOnSchedule:
             return (self.scheduleSwitchCell.cellSwitch.isOn ? 4 : 1);
         default:
@@ -404,6 +416,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.currentFilter.onSchedule = [self.scheduleSwitchCell.cellSwitch isOn];
         self.currentFilter.whitelistMode = [self.whitelistSwitchCell.cellSwitch isOn];
         self.currentFilter.blockMode = [self.blockModePickerCell.picker selectedRowInComponent:0];
+        self.currentFilter.forward = [self.forwardingSwitchCell.cellSwitch isOn];
 
         self.currentFilter.startTime = self.startTimeCell.datePicker.date;
         self.currentFilter.endTime = self.endTimeCell.datePicker.date;

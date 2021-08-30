@@ -22,6 +22,7 @@
     copy.filterType = self.filterType;
     copy.whitelistMode = self.whitelistMode;
     copy.blockMode = self.blockMode;
+    copy.forward = self.forward;
     copy.weekDays = [NSMutableArray arrayWithArray:self.weekDays];
     copy.filterName = self.filterName;
     return copy;
@@ -44,6 +45,7 @@
         self.onSchedule = [((NSNumber *)[dict objectForKey:@"onSchedule"]) boolValue];
         self.whitelistMode = [((NSNumber *)[dict objectForKey:@"whitelistMode"]) boolValue];
         self.blockMode = [((NSNumber *)[dict objectForKey:@"blockMode"]) intValue];
+        self.forward = [((NSNumber *)[dict objectForKey:@"forward"]) boolValue];
 
         self.startTime = [dict objectForKey:@"startTime"];
         self.endTime = [dict objectForKey:@"endTime"];
@@ -61,6 +63,8 @@
                                                          [NSNumber numberWithBool:self.onSchedule], @"onSchedule",
                                                          [NSNumber numberWithBool:self.whitelistMode], @"whitelistMode",
                                                          [NSNumber numberWithInt:self.blockMode], @"blockMode",
+                                                         [NSNumber numberWithBool:self.forward],
+                                                         @"forward",
                                                          self.startTime, @"startTime",
                                                          self.endTime, @"endTime",
                                                          self.weekDays, @"weekDays",
