@@ -1,3 +1,9 @@
+//
+//  ForwardNotifier
+//
+//  Created by ren7995 on 2021-08-30 20:34:15
+//
+
 #import <Foundation/Foundation.h>
 #import "../ForwardNotifierPrefs/NBPNotificationFilter.h"
 
@@ -67,7 +73,7 @@ struct FNBlockResult {
 @end
 
 @interface FNNotiBlockChecker : NSObject
-+ (struct FNBlockResult)blockTypeForBulletin:(BBBulletin *)bulletin;
++ (struct FNBlockResult)blockTypeForBulletin:(BBBulletin *)bulletin runScript:(BOOL)runScript;
 + (BOOL)areWeCurrentlyInSchedule:(NSDate *)startTime arg2:(NSDate *)endTime arg3:(NSArray *)weekdays;
 + (BOOL)doesMessageMatchFilterType:(BOOL)titleMatches arg2:(BOOL)subtitleMatches arg3:(BOOL)messageMatches arg4:(int)filterType;
 + (void)reloadFilters;

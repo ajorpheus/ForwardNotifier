@@ -61,14 +61,6 @@
 			<string>viewFilters</string>
 		</dict>
 		<dict>
-			<key>action</key>
-			<string>applyNow</string>
-			<key>cell</key>
-			<string>PSButtonCell</string>
-			<key>label</key>
-			<string>Apply Filters</string>
-		</dict>
-		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>

@@ -73,10 +73,6 @@
     }
 }
 
-- (void)applyNow {
-    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (__bridge CFStringRef) @"com.greg0109.forwardnotifierprefs.settingschanged", NULL, NULL, YES);
-}
-
 - (id)readPreferenceValue:(PSSpecifier *)specifier {
     NSString *path = [NSString stringWithFormat:@"/User/Library/Preferences/%@.plist", specifier.properties[@"defaults"]];
     NSMutableDictionary *settings = [NSMutableDictionary dictionary];

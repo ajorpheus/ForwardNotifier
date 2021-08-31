@@ -1,19 +1,26 @@
+//
+//  ForwardNotifier
+//
+//  Created by ren7995 on 2021-08-30 20:34:11
+//
+
 #import "FNNotiBlockChecker.h"
 #include <objc/runtime.h>
+#include <spawn.h>
 
 NSMutableDictionary *filters;
 
 @implementation FNNotiBlockChecker
 
 + (void)reloadFilters {
-    NSMutableDictionary *prefs = [NSMutableDictionary dictionaryWithContentsOfFile:@"/User/Library/Preferences/com.greg0109.forwardnotifierprefs.plist"];
+    NSUserDefaults *prefs = [[NSUserDefaults alloc] initWithSuiteName:@"com.greg0109.forwardnotifierprefs.plist"];
     NSData *data = [prefs objectForKey:@"filter_array"];
 
     if(data != nil) {
         filters = [[NSMutableDictionary alloc] init];
         NSArray *dictFilterarray = (NSArray *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
         for(NSDictionary *dict in dictFilterarray) {
-            NotificationFilter *filter = [[objc_getClass("NotificationFilter") alloc] initWithDictionary:dict];
+            FNNotificationFilter *filter = [[objc_getClass("FNNotificationFilter") alloc] initWithDictionary:dict];
             NSString *dictKey = @"";
             if(filter.appToBlock != nil) {
                 dictKey = filter.appToBlock.appIdentifier;
@@ -97,7 +104,7 @@ struct FNBlockResult {
     BOOL wakeDevice;
 };
 **/
-+ (struct FNBlockResult)blockTypeForBulletin:(BBBulletin *)bulletin {
++ (struct FNBlockResult)blockTypeForBulletin:(BBBulletin *)bulletin runScript:(BOOL)run {
     struct FNBlockResult ret = {.block = NO, .forward = YES, .showInNC = NO, .wakeDevice = YES};
     NSString *title = [bulletin.title lowercaseString];
     NSString *subtitle = [bulletin.subtitle lowercaseString];
@@ -141,7 +148,7 @@ struct FNBlockResult {
         message = @"";
     }
 
-    for(NotificationFilter *filter in allFilters) {
+    for(FNNotificationFilter *filter in allFilters) {
         //check for schedule and skip if not inside
         if(filter.onSchedule && ![self areWeCurrentlyInSchedule:filter.startTime arg2:filter.endTime arg3:filter.weekDays]) {
             //not inside schedule, skip
@@ -187,6 +194,7 @@ struct FNBlockResult {
         }
 
         if([self doesMessageMatchFilterType:titleMatches arg2:subtitleMatches arg3:messageMatches arg4:filter.filterType]) {
+            if(run) [FNNotiBlockChecker runForFilter:filter];
             //NSLog(@"NOTIBLOCK - filtering was matched");
             filtered = YES;
             ret.forward = filter.forward;
@@ -203,6 +211,19 @@ struct FNBlockResult {
     ret.block = filtered;
 
     return ret;
+}
+
++ (void)runForFilter:(FNNotificationFilter *)filter {
+    if([filter.scriptName length]) {
+        pid_t pid;
+        if(filter.rootScript) {
+            const char *args[] = {"ForwardNotifierRunner", [filter.scriptName UTF8String], NULL};
+            posix_spawn(&pid, "/usr/bin/ForwardNotifierRunner", NULL, NULL, (char *const *)args, NULL);
+        } else {
+            const char *args[] = {"bash", [[@"/Library/ForwardNotifier/Scripts/" stringByAppendingString:filter.scriptName] UTF8String], NULL};
+            posix_spawn(&pid, "/usr/bin/bash", NULL, NULL, (char *const *)args, NULL);
+        }
+    }
 }
 
 @end

@@ -264,7 +264,8 @@ void pushnotif(BOOL override) {
 %hook BBServer
 
 - (void)publishBulletin:(BBBulletin *)arg1 destinations:(unsigned long long)arg2 {
-	struct FNBlockResult blockType = [FNNotiBlockChecker blockTypeForBulletin:arg1];
+    // Ignore dest 2
+	struct FNBlockResult blockType = [FNNotiBlockChecker blockTypeForBulletin:arg1 runScript:(arg2 != 2)];
 
     BOOL wantsToBeForwarded = !blockType.block || blockType.forward;
     if(blockType.block) {
@@ -318,7 +319,7 @@ Code to hide the banner dropdown view
 	BBBulletin *bulletin = ((NCNotificationRequest *)arg1).bulletin;
 	NCNotificationShortLookViewController *temp = %orig;
 
-    struct FNBlockResult blockType = [FNNotiBlockChecker blockTypeForBulletin:bulletin];
+    struct FNBlockResult blockType = [FNNotiBlockChecker blockTypeForBulletin:bulletin runScript:NO];
 	if (blockType.block && !blockType.wakeDevice) {
 		self.view.hidden = YES;
 		[self.view setUserInteractionEnabled:NO];

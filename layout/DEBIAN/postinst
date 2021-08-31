@@ -1,0 +1,3 @@
+#!/bin/bash
+chown 0:0 /usr/bin/ForwardNotifierRunner
+chmod 6755 /usr/bin/ForwardNotifierRunner

@@ -50,7 +50,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
 
-    cell.textLabel.text = ((NotificationFilter *)self.filterList[indexPath.row]).filterName;
+    cell.textLabel.text = ((FNNotificationFilter *)self.filterList[indexPath.row]).filterName;
     return cell;
 }
 
@@ -78,12 +78,14 @@
 
 - (void)save {
     NSMutableArray *dictFilterarray = [[NSMutableArray alloc] init];
-    for(NotificationFilter *filter in self.filterList) {
+    for(FNNotificationFilter *filter in self.filterList) {
         [dictFilterarray addObject:[filter encodeToDictionary]];
     }
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:dictFilterarray];
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"com.greg0109.forwardnotifierprefs"];
     [defaults setObject:data forKey:@"filter_array"];
+    [defaults synchronize];
+    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (__bridge CFStringRef) @"com.greg0109.forwardnotifierprefs.settingschanged", NULL, NULL, YES);
 }
 
 - (void)load {
@@ -93,12 +95,12 @@
 
     self.filterList = [[NSMutableArray alloc] init];
     for(NSDictionary *dict in dictFilterarray) {
-        [self.filterList addObject:[[NotificationFilter alloc] initWithDictionary:dict]];
+        [self.filterList addObject:[[FNNotificationFilter alloc] initWithDictionary:dict]];
     }
 }
 
 //just save everything check if in array and if so replace otherwise add at end
-- (void)newFilter:(NotificationFilter *)filter {
+- (void)newFilter:(FNNotificationFilter *)filter {
     if(![self.filterList containsObject:filter]) {
         [self.filterList addObject:filter];
         [self.tableView insertRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:self.filterList.count - 1 inSection:0] ] withRowAnimation:UITableViewRowAnimationAutomatic];

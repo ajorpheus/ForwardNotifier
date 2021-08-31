@@ -1,5 +1,5 @@
 //
-//  NotificationFilter.h
+//  FNNotificationFilter.h
 //  thing
 //
 //  Created by Tomer Shemesh on 12/1/18.
@@ -9,9 +9,11 @@
 #import <Foundation/Foundation.h>
 #import "NBPAppInfo.h"
 
-@interface NotificationFilter : NSObject <NSCopying>
+@interface FNNotificationFilter : NSObject <NSCopying>
 @property (nonatomic, strong) NSString *filterName;
 @property (nonatomic, strong) NSString *filterText;
+@property (nonatomic, strong) NSString *scriptName;
+@property (nonatomic, assign) BOOL rootScript;
 @property (nonatomic) NSInteger blockType;
 @property (nonatomic) NSInteger filterType;
 @property (nonatomic, strong) AppInfo *appToBlock;

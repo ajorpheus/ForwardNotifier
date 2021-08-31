@@ -1,5 +1,5 @@
 //
-//  NotificationFilter.m
+//  FNNotificationFilter.m
 //  thing
 //
 //  Created by Tomer Shemesh on 12/1/18.
@@ -8,12 +8,14 @@
 
 #import "NBPNotificationFilter.h"
 
-@implementation NotificationFilter
+@implementation FNNotificationFilter
 
 - (id)copyWithZone:(NSZone *)zone {
-    NotificationFilter *copy = [[NotificationFilter allocWithZone:zone] init];
+    FNNotificationFilter *copy = [[FNNotificationFilter allocWithZone:zone] init];
     copy.filterName = self.filterName;
     copy.filterText = self.filterText;
+    copy.scriptName = self.scriptName;
+    copy.rootScript = self.rootScript;
     copy.blockType = self.blockType;
     copy.appToBlock = self.appToBlock;
     copy.onSchedule = self.onSchedule;
@@ -34,6 +36,8 @@
     if(self = [super init]) {
         self.filterName = [dict objectForKey:@"filterName"];
         self.filterText = [dict objectForKey:@"filterText"];
+        self.scriptName = [dict objectForKey:@"scriptName"];
+        self.rootScript = [[dict objectForKey:@"rootScript"] boolValue];
         self.blockType = [((NSNumber *)[dict objectForKey:@"blockType"]) intValue];
         self.filterType = [((NSNumber *)[dict objectForKey:@"filterType"]) intValue];
 
@@ -59,24 +63,24 @@
 }
 
 - (NSDictionary *)encodeToDictionary {
-    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                                         self.filterName, @"filterName",
-                                                         self.filterText, @"filterText",
-                                                         [NSNumber numberWithInt:self.blockType], @"blockType",
-                                                         [NSNumber numberWithInt:self.filterType], @"filterType",
-                                                         [NSNumber numberWithBool:self.onSchedule], @"onSchedule",
-                                                         [NSNumber numberWithBool:self.whitelistMode], @"whitelistMode",
-                                                         [NSNumber numberWithInt:self.blockMode], @"blockMode",
-                                                         [NSNumber numberWithBool:self.forward],
-                                                         @"forward",
-                                                         [NSNumber numberWithBool:self.wakeDevice],
-                                                         @"wakeDevice",
-                                                         [NSNumber numberWithBool:self.showInNC],
-                                                         @"showInNC",
-                                                         self.startTime, @"startTime",
-                                                         self.endTime, @"endTime",
-                                                         self.weekDays, @"weekDays",
-                                                         nil];
+    NSMutableDictionary *dict =
+        [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                 self.filterName, @"filterName",
+                                 self.filterText, @"filterText",
+                                 self.scriptName, @"scriptName",
+                                 @(self.rootScript), @"rootScript",
+                                 @(self.blockType), @"blockType",
+                                 @(self.filterType), @"filterType",
+                                 @(self.onSchedule), @"onSchedule",
+                                 @(self.whitelistMode), @"whitelistMode",
+                                 @(self.blockMode), @"blockMode",
+                                 @(self.forward), @"forward",
+                                 @(self.wakeDevice), @"wakeDevice",
+                                 @(self.showInNC), @"showInNC",
+                                 self.startTime, @"startTime",
+                                 self.endTime, @"endTime",
+                                 self.weekDays, @"weekDays",
+                                 nil];
 
     if(self.appToBlock != nil) {
         [dict setObject:self.appToBlock.appIdentifier forKey:@"appToBlockIdentifier"];

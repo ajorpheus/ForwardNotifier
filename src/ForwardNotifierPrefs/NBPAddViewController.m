@@ -23,7 +23,8 @@ typedef NS_ENUM(NSUInteger, Section) {
     SectionAppFilter = 3,
     SectionWhitelistMode = 4,
     SectionBlockMode = 5,
-    SectionBlockOnSchedule = 6
+    SectionScripting = 6,
+    SectionBlockOnSchedule = 7,
 };
 
 @interface NBPAddViewController ()
@@ -47,6 +48,9 @@ typedef NS_ENUM(NSUInteger, Section) {
 @property SwitchTableViewCell *scheduleSwitchCell;
 @property WeekDayTableViewCell *weekDayCell;
 @property AppInfo *selectedApp;
+
+@property TextEntryTableViewCell *scriptNameCell;
+@property SwitchTableViewCell *rootScriptSwitchCell;
 
 @end
 
@@ -116,6 +120,15 @@ typedef NS_ENUM(NSUInteger, Section) {
 
     self.weekDayCell = [[WeekDayTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"weekdayCell"];
 
+    self.scriptNameCell = [[TextEntryTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"scriptNameCell"];
+    self.scriptNameCell.textField.placeholder = @"Script Name";
+    [self.scriptNameCell.textField setReturnKeyType:UIReturnKeyNext];
+    self.scriptNameCell.textField.delegate = self;
+
+    self.rootScriptSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"rootScriptSwitchCell"];
+    self.rootScriptSwitchCell.switchLabel.text = @"Run Script as Root";
+    [self.rootScriptSwitchCell setSwitchListener:self];
+
     int screenHeight = self.view.frame.size.height;
     int screenWidth = self.view.frame.size.width;
     self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, screenWidth, screenHeight) style:UITableViewStyleGrouped];
@@ -131,11 +144,13 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.selectedApp = self.currentFilter.appToBlock;
         self.filterNameCell.textField.text = self.currentFilter.filterName;
         self.filterTextCell.textField.text = self.currentFilter.filterText;
+        self.scriptNameCell.textField.text = self.currentFilter.scriptName;
         [self.blockTypePickerCell setPickerIndex:self.currentFilter.blockType];
         [self.notificationFilterFieldPickerCell setPickerIndex:self.currentFilter.filterType];
         [self.forwardingSwitchCell.cellSwitch setOn:self.currentFilter.forward];
         [self.showInNCSwitchCell.cellSwitch setOn:self.currentFilter.showInNC];
         [self.wakeDeviceSwitchCell.cellSwitch setOn:self.currentFilter.wakeDevice];
+        [self.rootScriptSwitchCell.cellSwitch setOn:self.currentFilter.rootScript];
 
         if(self.selectedApp != nil) {
             self.appToBlockCell.buttonTextLabel.text = self.selectedApp.appName;
@@ -151,7 +166,7 @@ typedef NS_ENUM(NSUInteger, Section) {
 
     } else {
         self.title = @"New Filter";
-        self.currentFilter = [[NotificationFilter alloc] init];
+        self.currentFilter = [[FNNotificationFilter alloc] init];
         [self.notificationFilterFieldPickerCell setPickerIndex:0];
         [self.forwardingSwitchCell.cellSwitch setOn:YES];
         saveButtonText = @"Create";
@@ -204,6 +219,13 @@ typedef NS_ENUM(NSUInteger, Section) {
                 case 3:
                     return self.weekDayCell;
             }
+        case SectionScripting:
+            switch(indexPath.row) {
+                case 0:
+                    return self.scriptNameCell;
+                case 1:
+                    return self.rootScriptSwitchCell;
+            }
     }
     return nil;
 }
@@ -218,6 +240,10 @@ typedef NS_ENUM(NSUInteger, Section) {
             return @"Filter Criteria";
         case SectionAppFilter:
             return @"Filter by App";
+        case SectionBlockMode:
+            return @"Filter Options";
+        case SectionScripting:
+            return @"Scripting";
     }
 
     return nil;
@@ -231,6 +257,8 @@ typedef NS_ENUM(NSUInteger, Section) {
             return @"Notification Center: Prevent the notification from making sounds sound, waking your device, or showing banners. It will still show up on the lockscreen.";
         case SectionBlockOnSchedule:
             return @"Schedule when to activate this filter. The filter will only activate in the given timeframe on the selected days (in green). If the notification happens on a day that is red or outside the timeframe, it will not be blocked.";
+        case SectionScripting:
+            return @"The script designated will be ran when the filter criteria is matched by a notification (leave empty for no script). The script must be located in /Library/ForwardNotifier/Scripts and end in .sh, or it will not be executed. Please provide the scrip name in the following format: SCRIPT_NAME.sh\n\nIt is *highly* recommended that you disable the option to run as root unless your script requires root access.";
     }
 
     return nil;
@@ -244,13 +272,15 @@ typedef NS_ENUM(NSUInteger, Section) {
             return 3;
         case SectionBlockOnSchedule:
             return (self.scheduleSwitchCell.cellSwitch.isOn ? 4 : 1);
+        case SectionScripting:
+            return 2;
         default:
             return 1;
     }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 7;
+    return 8;
 }
 
 - (void)switchChanged:(UISwitch *)sender {
@@ -399,6 +429,11 @@ typedef NS_ENUM(NSUInteger, Section) {
     }
     //first we have to do some validation
 
+    if([self.scriptNameCell.textField hasText] && ![self.scriptNameCell.textField.text hasSuffix:@".sh"]) {
+        [self alertUser:@"Your script name must end in .sh"];
+        return;
+    }
+
     if(![self.filterNameCell.textField hasText]) {
         [self alertUser:@"Missing Filter Name"];
     } else if([self.blockTypePickerCell.picker selectedRowInComponent:0] != 5 && ![self.filterTextCell.textField hasText]) {
@@ -424,6 +459,9 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.currentFilter.startTime = self.startTimeCell.datePicker.date;
         self.currentFilter.endTime = self.endTimeCell.datePicker.date;
         self.currentFilter.weekDays = self.weekDayCell.weekDaysSelected;
+
+        self.currentFilter.rootScript = [self.rootScriptSwitchCell.cellSwitch isOn];
+        self.currentFilter.scriptName = self.scriptNameCell.textField.text;
 
         [self.delegate newFilter:self.currentFilter];
         [self dismissViewControllerAnimated:YES completion:nil];
