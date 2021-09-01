@@ -93,7 +93,7 @@ typedef NS_ENUM(NSUInteger, Section) {
     self.appToBlockCell = [[ButtonTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"buttonCell"];
 
     self.whitelistSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"whitelistswitchCell"];
-    self.whitelistSwitchCell.switchLabel.text = @"Whitelist Mode";
+    self.whitelistSwitchCell.switchLabel.text = @"Invert Filter";
     [self.whitelistSwitchCell setSwitchListener:self];
 
     self.forwardingSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"forwardingSwitchCell"];
@@ -252,7 +252,7 @@ typedef NS_ENUM(NSUInteger, Section) {
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     switch(section) {
         case SectionWhitelistMode:
-            return @"Invert the filter criteria: only notifications that match this will have the action combination executed. Note that whitelist filters cannot be combined with any other filters for that app. If you need to whitelist multiple things, you will need to use a regex.\n\nExample: enable Whitelist Mode, select the regex filter, and enter “^(Tomer|Alex):” to block all actions for notifications from an app that don't start with ”Tomer:” or ”Alex:”, ignoring everything else.";
+            return @"Invert the filter criteria: *only* notifications that match this will have the action combination executed. Note that inverted filters cannot be combined with any other filters for that app. If you need to allow matches for multiple things, you will need to use a regex.\n\nExample: enable Invert Filter, select the regex filter, and enter “^(Tomer|Alex):” to block all actions for notifications from an app that don't start with ”Tomer:” or ”Alex:”, ignoring everything else.";
         case SectionBlockMode:
             return @"Notification Center: Prevent the notification from making sounds sound, waking your device, or showing banners. It will still show up on the lockscreen.";
         case SectionBlockOnSchedule:

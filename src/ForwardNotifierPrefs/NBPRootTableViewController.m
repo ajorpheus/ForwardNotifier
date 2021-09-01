@@ -82,15 +82,18 @@
         [dictFilterarray addObject:[filter encodeToDictionary]];
     }
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:dictFilterarray];
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"com.greg0109.forwardnotifierprefs"];
-    [defaults setObject:data forKey:@"filter_array"];
-    [defaults synchronize];
+    NSString *path = @"/User/Library/Preferences/com.greg0109.forwardnotifierprefs.plist";
+    NSMutableDictionary *settings = [NSMutableDictionary dictionary];
+    [settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:path]];
+    [settings setObject:data forKey:@"filter_array"];
+    [settings writeToFile:path atomically:YES];
     CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (__bridge CFStringRef) @"com.greg0109.forwardnotifierprefs.settingschanged", NULL, NULL, YES);
 }
 
 - (void)load {
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"com.greg0109.forwardnotifierprefs"];
-    NSData *data = [defaults objectForKey:@"filter_array"];
+    NSString *path = @"/User/Library/Preferences/com.greg0109.forwardnotifierprefs.plist";
+    NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:path];
+    NSData *data = [prefs objectForKey:@"filter_array"];
     NSArray *dictFilterarray = (NSArray *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
 
     self.filterList = [[NSMutableArray alloc] init];

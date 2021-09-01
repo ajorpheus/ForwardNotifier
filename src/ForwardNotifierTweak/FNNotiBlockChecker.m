@@ -13,7 +13,8 @@ NSMutableDictionary *filters;
 @implementation FNNotiBlockChecker
 
 + (void)reloadFilters {
-    NSUserDefaults *prefs = [[NSUserDefaults alloc] initWithSuiteName:@"com.greg0109.forwardnotifierprefs.plist"];
+    NSString *path = @"/User/Library/Preferences/com.greg0109.forwardnotifierprefs.plist";
+    NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:path];
     NSData *data = [prefs objectForKey:@"filter_array"];
 
     if(data != nil) {
@@ -21,7 +22,7 @@ NSMutableDictionary *filters;
         NSArray *dictFilterarray = (NSArray *)[NSKeyedUnarchiver unarchiveObjectWithData:data];
         for(NSDictionary *dict in dictFilterarray) {
             FNNotificationFilter *filter = [[objc_getClass("FNNotificationFilter") alloc] initWithDictionary:dict];
-            NSString *dictKey = @"";
+            NSString *dictKey = @"all";
             if(filter.appToBlock != nil) {
                 dictKey = filter.appToBlock.appIdentifier;
             }
@@ -123,8 +124,9 @@ struct FNBlockResult {
 
     //NSLog(@"NOTIBLOCK - loading all filters: %lu", (unsigned long)[filters count]);
 
-    NSMutableArray *allFilters = [filters objectForKey:@""];
+    NSMutableArray *allFilters = [filters objectForKey:@"all"];
     NSMutableArray *appFilters = [filters objectForKey:sectionId];
+    //NSLog(@"%@ and %@", allFilters, appFilters);
 
     if(allFilters == nil) {
         allFilters = [[NSMutableArray alloc] init];
@@ -188,13 +190,10 @@ struct FNBlockResult {
             titleMatches = ![title isEqualToString:@""] && [notifTest evaluateWithObject:title];
             subtitleMatches = ![subtitle isEqualToString:@""] && [notifTest evaluateWithObject:subtitle];
             messageMatches = ![message isEqualToString:@""] && [notifTest evaluateWithObject:message];
-        } else if(filter.blockType == 5) { //always
-            //NSLog(@"NOTIBLOCK - app should always be filtered. filtering turned on");
-            filtered = YES;
         }
 
-        if([self doesMessageMatchFilterType:titleMatches arg2:subtitleMatches arg3:messageMatches arg4:filter.filterType]) {
-            if(run) [FNNotiBlockChecker runForFilter:filter];
+        if(filter.blockType == 5 || [self doesMessageMatchFilterType:titleMatches arg2:subtitleMatches arg3:messageMatches arg4:filter.filterType]) {
+            //NSLog(@"NOTIBLOCK - filtering was matched");
             //NSLog(@"NOTIBLOCK - filtering was matched");
             filtered = YES;
             ret.forward = filter.forward;
@@ -206,6 +205,8 @@ struct FNBlockResult {
             //NSLog(@"NOTIBLOCK - whitelist Mode on");
             filtered = !filtered;
         }
+
+        if(filtered && run) [FNNotiBlockChecker runForFilter:filter];
     }
 
     ret.block = filtered;
