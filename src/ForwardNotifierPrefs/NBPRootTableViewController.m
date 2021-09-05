@@ -76,6 +76,32 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewRowAction *copyAction = [UITableViewRowAction
+        rowActionWithStyle:UITableViewRowActionStyleNormal
+                     title:@"Duplicate"
+                   handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+                       FNNotificationFilter *filter = self.filterList[indexPath.row];
+                       FNNotificationFilter *filterCopy = [filter copyWithZone:nil];
+                       filterCopy.filterName = [filter.filterName stringByAppendingString:@" Copy"];
+                       [self.filterList addObject:filterCopy];
+                       [self.tableView insertRowsAtIndexPaths:@[ [NSIndexPath indexPathForRow:self.filterList.count - 1 inSection:0] ] withRowAnimation:UITableViewRowAnimationAutomatic];
+                       [self save];
+                   }];
+    copyAction.backgroundColor = [UIColor colorWithRed:0.08 green:0.42 blue:1.00 alpha:1.00];
+
+    UITableViewRowAction *deleteAction = [UITableViewRowAction
+        rowActionWithStyle:UITableViewRowActionStyleNormal
+                     title:@"Delete"
+                   handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+                       [self.filterList removeObjectAtIndex:indexPath.row];
+                       [tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:UITableViewRowAnimationAutomatic];
+                       [self save];
+                   }];
+    deleteAction.backgroundColor = [UIColor colorWithRed:1.00 green:0.13 blue:0.17 alpha:1.00];
+    return @[ deleteAction, copyAction ];
+}
+
 - (void)save {
     NSMutableArray *dictFilterarray = [[NSMutableArray alloc] init];
     for(FNNotificationFilter *filter in self.filterList) {

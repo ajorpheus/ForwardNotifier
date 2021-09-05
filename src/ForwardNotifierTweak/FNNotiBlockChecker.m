@@ -196,9 +196,6 @@ struct FNBlockResult {
             //NSLog(@"NOTIBLOCK - filtering was matched");
             //NSLog(@"NOTIBLOCK - filtering was matched");
             filtered = YES;
-            ret.forward = filter.forward;
-            ret.wakeDevice = filter.wakeDevice;
-            ret.showInNC = filter.showInNC;
         }
 
         if(filter.whitelistMode) {
@@ -206,7 +203,13 @@ struct FNBlockResult {
             filtered = !filtered;
         }
 
-        if(filtered && run) [FNNotiBlockChecker runForFilter:filter];
+        if(filtered) {
+            ret.forward = filter.forward;
+            ret.wakeDevice = filter.wakeDevice;
+            ret.showInNC = filter.showInNC;
+            if(run)
+                [FNNotiBlockChecker runForFilter:filter];
+        }
     }
 
     ret.block = filtered;
@@ -215,7 +218,7 @@ struct FNBlockResult {
 }
 
 + (void)runForFilter:(FNNotificationFilter *)filter {
-    if([filter.scriptName length]) {
+    if(filter.enableScript && [filter.scriptName length]) {
         pid_t pid;
         if(filter.rootScript) {
             const char *args[] = {"ForwardNotifierRunner", [filter.scriptName UTF8String], NULL};

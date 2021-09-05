@@ -24,6 +24,7 @@
     copy.filterType = self.filterType;
     copy.whitelistMode = self.whitelistMode;
     copy.blockMode = self.blockMode;
+    copy.enableScript = self.enableScript;
     copy.forward = self.forward;
     copy.wakeDevice = self.wakeDevice;
     copy.showInNC = self.showInNC;
@@ -52,6 +53,7 @@
         self.whitelistMode = [((NSNumber *)[dict objectForKey:@"whitelistMode"]) boolValue];
         self.blockMode = [((NSNumber *)[dict objectForKey:@"blockMode"]) intValue];
         self.forward = [((NSNumber *)[dict objectForKey:@"forward"]) boolValue];
+        self.enableScript = [((NSNumber *)[dict objectForKey:@"enableScript"]) boolValue];
         self.wakeDevice = [((NSNumber *)[dict objectForKey:@"wakeDevice"]) boolValue];
         self.showInNC = [((NSNumber *)[dict objectForKey:@"showInNC"]) boolValue];
 
@@ -75,6 +77,7 @@
                                  @(self.whitelistMode), @"whitelistMode",
                                  @(self.blockMode), @"blockMode",
                                  @(self.forward), @"forward",
+                                 @(self.enableScript), @"enableScript",
                                  @(self.wakeDevice), @"wakeDevice",
                                  @(self.showInNC), @"showInNC",
                                  self.startTime, @"startTime",

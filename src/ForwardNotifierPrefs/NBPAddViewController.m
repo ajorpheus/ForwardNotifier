@@ -49,6 +49,7 @@ typedef NS_ENUM(NSUInteger, Section) {
 @property WeekDayTableViewCell *weekDayCell;
 @property AppInfo *selectedApp;
 
+@property SwitchTableViewCell *enableScriptSwitchCell;
 @property TextEntryTableViewCell *scriptNameCell;
 @property SwitchTableViewCell *rootScriptSwitchCell;
 
@@ -120,6 +121,10 @@ typedef NS_ENUM(NSUInteger, Section) {
 
     self.weekDayCell = [[WeekDayTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"weekdayCell"];
 
+    self.enableScriptSwitchCell = [[SwitchTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"enableScriptSwitchCell"];
+    self.enableScriptSwitchCell.switchLabel.text = @"Enable Script";
+    [self.enableScriptSwitchCell setSwitchListener:self];
+
     self.scriptNameCell = [[TextEntryTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"scriptNameCell"];
     self.scriptNameCell.textField.placeholder = @"Script Name";
     [self.scriptNameCell.textField setReturnKeyType:UIReturnKeyNext];
@@ -150,6 +155,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         [self.forwardingSwitchCell.cellSwitch setOn:self.currentFilter.forward];
         [self.showInNCSwitchCell.cellSwitch setOn:self.currentFilter.showInNC];
         [self.wakeDeviceSwitchCell.cellSwitch setOn:self.currentFilter.wakeDevice];
+        [self.enableScriptSwitchCell.cellSwitch setOn:self.currentFilter.enableScript];
         [self.rootScriptSwitchCell.cellSwitch setOn:self.currentFilter.rootScript];
 
         if(self.selectedApp != nil) {
@@ -222,8 +228,10 @@ typedef NS_ENUM(NSUInteger, Section) {
         case SectionScripting:
             switch(indexPath.row) {
                 case 0:
-                    return self.scriptNameCell;
+                    return self.enableScriptSwitchCell;
                 case 1:
+                    return self.scriptNameCell;
+                case 2:
                     return self.rootScriptSwitchCell;
             }
     }
@@ -258,7 +266,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         case SectionBlockOnSchedule:
             return @"Schedule when to activate this filter. The filter will only activate in the given timeframe on the selected days (in green). If the notification happens on a day that is red or outside the timeframe, it will not be blocked.";
         case SectionScripting:
-            return @"The script designated will be ran when the filter criteria is matched by a notification (leave empty for no script). The script must be located in /Library/ForwardNotifier/Scripts and end in .sh, or it will not be executed. Please provide the scrip name in the following format: SCRIPT_NAME.sh\n\nIt is *highly* recommended that you disable the option to run as root unless your script requires root access.";
+            return @"The script designated will be ran when the filter criteria is matched by a notification. The script must be located in /Library/ForwardNotifier/Scripts and end in .sh, or it will not be executed. Please provide the scrip name in the following format: SCRIPT_NAME.sh\n\nIt is *highly* recommended that you disable the option to run as root unless your script requires root access.";
     }
 
     return nil;
@@ -273,7 +281,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         case SectionBlockOnSchedule:
             return (self.scheduleSwitchCell.cellSwitch.isOn ? 4 : 1);
         case SectionScripting:
-            return 2;
+            return 3;
         default:
             return 1;
     }
@@ -460,6 +468,7 @@ typedef NS_ENUM(NSUInteger, Section) {
         self.currentFilter.endTime = self.endTimeCell.datePicker.date;
         self.currentFilter.weekDays = self.weekDayCell.weekDaysSelected;
 
+        self.currentFilter.enableScript = [self.enableScriptSwitchCell.cellSwitch isOn];
         self.currentFilter.rootScript = [self.rootScriptSwitchCell.cellSwitch isOn];
         self.currentFilter.scriptName = self.scriptNameCell.textField.text;
 

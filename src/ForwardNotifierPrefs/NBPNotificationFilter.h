@@ -20,6 +20,7 @@
 @property (nonatomic) BOOL onSchedule;
 @property (nonatomic) BOOL whitelistMode;
 @property (nonatomic) BOOL forward;
+@property (nonatomic) BOOL enableScript;
 @property (nonatomic) BOOL wakeDevice;
 @property (nonatomic) BOOL showInNC;
 @property (nonatomic) NSInteger blockMode;
