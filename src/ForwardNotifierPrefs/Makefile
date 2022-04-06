@@ -10,6 +10,7 @@ ForwardNotifier_INSTALL_PATH = /Library/PreferenceBundles
 ForwardNotifier_FRAMEWORKS = UIKit
 ForwardNotifier_LIBRARIES = applist
 ForwardNotifier_PRIVATE_FRAMEWORKS = Preferences OnBoardingKit
+ForwardNotifier_EXTRA_FRAMEWORKS += Cephei
 ForwardNotifier_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/bundle.mk
