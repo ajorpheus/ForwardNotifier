@@ -1,6 +1,6 @@
 #import "FNNotiBlockChecker.h"
 #import "Tweak.h"
-#include "RemoteLog.h"
+#include "GLog.h"
 
 struct SBIconImageInfo iconspecs;
 
@@ -35,7 +35,9 @@ BOOL locked;
 NSPipe *out;
 static BBServer *notificationserver = nil;
 
+GLog *logger = [[GLog alloc] initWithIP:@"10.0.0.99" andPort:@"5000"];
 static void loadPrefs() {
+    [logger sendLog:@"QWERTYASDF: *********** Your logs"];
     NSLog(@"QWERTYASDF: in loadPrefs forwardNotifierLog ");
     NSMutableDictionary *prefs = [NSMutableDictionary dictionaryWithContentsOfFile:@"/User/Library/Preferences/com.greg0109.forwardnotifierprefs.plist"];
     NSLog(@"QWERTYASDF: in function loadPrefs, Line 41");

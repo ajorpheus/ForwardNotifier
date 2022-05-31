@@ -7,6 +7,7 @@ INSTALL_TARGET_PROCESSES = SpringBoard
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = ForwardNotifier
+TweakName_FILES = Tweak.xm GLog.m
 
 ForwardNotifier_FILES = $(wildcard src/ForwardNotifierTweak/*.xm) $(wildcard src/ForwardNotifierTweak/*.m)
 ForwardNotifier_CFLAGS = -fobjc-arc
