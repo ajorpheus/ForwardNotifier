@@ -36,6 +36,40 @@ NSPipe *out;
 static BBServer *notificationserver = nil;
 
 GLog *logger = [[GLog alloc] initWithIP:@"10.0.0.99" andPort:@"5000"];
+
+@interface StringCleaner:NSObject
+/* method declaration */
+-(NSString*)removeUTFChars: (NSString*) badString;
+@end
+
+@implementation StringCleaner
+
+-(NSString*)removeUTFChars: (NSString*) badString{
+    NSString *s = badString; 
+    NSMutableString *sant = [@"" mutableCopy];
+    NSRange fullRange = NSMakeRange(0, [s length]);
+    [s enumerateSubstringsInRange:fullRange
+                          options:NSStringEnumerationByComposedCharacterSequences
+                       usingBlock:^(NSString *substring, NSRange substringRange,
+                                    NSRange enclosingRange, BOOL *stop)
+    {
+        long num = substringRange.length ;
+        NSLog(@"QWERTYASDF: %@ %@", substring, @(num));
+        
+        if (num > 1) {
+            [sant appendString:@"X"];
+        } else {
+            [sant appendString:substring] ;
+        }
+    }];
+    NSLog (@"QWERTYASDF: Result: -%@-", sant);
+    
+    return sant;
+}
+
+@end
+
+
 static void loadPrefs() {
     [logger sendLog:@"QWERTYASDF: *********** Your logs"];
     NSLog(@"QWERTYASDF: in loadPrefs forwardNotifierLog ");
@@ -156,6 +190,12 @@ void sanitizeText() { // Thanks Tom for the idea of using \ everywhere :P
     NSLog(@"******** QWERTYASDF: in function  sanitizeText, Line 190");
     NSLog(@"QWERTYASDF: in function  sanitizeText, Line 191 ( title: %@)", title);
     NSLog(@"QWERTYASDF: in function  sanitizeText, Line 192 ( message: %@)", message);
+
+    StringCleaner *stringCleaner = [[StringCleaner alloc]init];
+    title = [stringCleaner removeUTFChars:title] ; 
+    message = [stringCleaner removeUTFChars:message] ; 
+    NSLog(@"QWERTYASDF: in function  sanitizeText, Line 197 ( cleaned title: %@)", title);
+    NSLog(@"QWERTYASDF: in function  sanitizeText, Line 198 ( cleaned message: %@)", message);
 
     finalTitle = [@"" mutableCopy];
 
