@@ -41,7 +41,7 @@ NSMutableDictionary *filters;
 returns whether a message should be filtered based on some boolean logic of filters
 **/
 + (BOOL)doesMessageMatchFilterType:(BOOL)titleMatches arg2:(BOOL)subtitleMatches arg3:(BOOL)messageMatches arg4:(int)filterType {
-    //NSLog(@"NOTIBLOCK - checking matched: title: %@, subtitle: %@, message: %@, filterType: %d", (titleMatches ? @"true" : @"false"), (subtitleMatches ? @"true" : @"false"), (messageMatches ? @"true" : @"false"), filterType);
+    NSLog(@"NOTIBLOCK QWERTYASDF - checking matched: title: %@, subtitle: %@, message: %@, filterType: %d", (titleMatches ? @"true" : @"false"), (subtitleMatches ? @"true" : @"false"), (messageMatches ? @"true" : @"false"), filterType);
     if(filterType == 0) {
         return titleMatches || subtitleMatches || messageMatches;
     } else if(filterType == 1) {
@@ -58,7 +58,7 @@ returns whether a message should be filtered based on some boolean logic of filt
 returns whether we are currently inbetween the start time and and time and on a weekday set to true in an array of bools
 **/
 + (BOOL)areWeCurrentlyInSchedule:(NSDate *)startTime arg2:(NSDate *)endTime arg3:(NSArray *)weekdays {
-    //NSLog(@"NOTIBLOCK - checking schedule");
+    NSLog(@"NOTIBLOCK QWERTYASDF - checking schedule");
 
     NSDate *curTime = [NSDate date];
 
@@ -77,22 +77,22 @@ returns whether we are currently inbetween the start time and and time and on a 
                            1;
     //day of week is not selected
     if(![((NSNumber *)weekdays[curWeekday]) boolValue]) {
-        //NSLog(@"NOTIBLOCK - day is not active. skipping filter");
+        NSLog(@"NOTIBLOCK QWERTYASDF - day is not active. skipping filter");
         return false;
     }
 
     if([[newStartTime earlierDate:newEndTime] isEqualToDate:newEndTime]) { //backwards (start time before end time)
-        //NSLog(@"NOTIBLOCK - backwards schedule mode");
+        NSLog(@"NOTIBLOCK QWERTYASDF - backwards schedule mode");
         return [[newStartTime earlierDate:curTime] isEqualToDate:newStartTime] || [[newEndTime earlierDate:curTime] isEqualToDate:curTime];
     } else { //regular, check for in between
 
-        //NSLog(@"NOTIBLOCK - regular schedule mode");
-        //NSLog(@"NOTIBLOCK - curTime: %f", [curTime timeIntervalSince1970]);
-        //NSLog(@"NOTIBLOCK - newStartTime: %f", [newStartTime timeIntervalSince1970]);
-        //NSLog(@"NOTIBLOCK - newEndTime: %f", [newEndTime timeIntervalSince1970]);
+        NSLog(@"NOTIBLOCK QWERTYASDF - regular schedule mode");
+        NSLog(@"NOTIBLOCK QWERTYASDF - curTime: %f", [curTime timeIntervalSince1970]);
+        NSLog(@"NOTIBLOCK QWERTYASDF - newStartTime: %f", [newStartTime timeIntervalSince1970]);
+        NSLog(@"NOTIBLOCK QWERTYASDF - newEndTime: %f", [newEndTime timeIntervalSince1970]);
 
-        //NSLog(@"NOTIBLOCK - is after start - %@", ([[newStartTime earlierDate:curTime] isEqualToDate:newStartTime] ? @"true" : @"false"));
-        //NSLog(@"NOTIBLOCK - is before end - %@", ([[newEndTime earlierDate:curTime] isEqualToDate:curTime] ? @"true" : @"false"));
+        NSLog(@"NOTIBLOCK QWERTYASDF - is after start - %@", ([[newStartTime earlierDate:curTime] isEqualToDate:newStartTime] ? @"true" : @"false"));
+        NSLog(@"NOTIBLOCK QWERTYASDF - is before end - %@", ([[newEndTime earlierDate:curTime] isEqualToDate:curTime] ? @"true" : @"false"));
         return [[newEndTime earlierDate:curTime] isEqualToDate:curTime] && [[newStartTime earlierDate:curTime] isEqualToDate:newStartTime];
     }
 }
@@ -110,11 +110,11 @@ struct FNBlockResult {
     NSString *title = [bulletin.title lowercaseString];
     NSString *subtitle = [bulletin.subtitle lowercaseString];
     NSString *message = [bulletin.message lowercaseString];
-    //NSString *bulletinID = bulletin.bulletinID;
+    NSString *bulletinID = bulletin.bulletinID;
     NSString *sectionId = bulletin.sectionID;
 
-    // //NSLog(@"NOTIBLOCK - Entered publish bulletin for %@ with ID: %@ ", sectionId, bulletinID);
-    //NSLog(@"NOTIBLOCK - BulletinID:%@         Title: %@      Subtitle: %@         Message: %@", bulletinID, title, subtitle, message);
+    NSLog(@"NOTIBLOCK QWERTYASDF - Entered publish bulletin for %@ with ID: %@ ", sectionId, bulletinID);
+    NSLog(@"NOTIBLOCK QWERTYASDF - BulletinID:%@         Title: %@      Subtitle: %@         Message: %@", bulletinID, title, subtitle, message);
 
     BOOL filtered = NO;
 
@@ -122,11 +122,11 @@ struct FNBlockResult {
         return ret;
     }
 
-    //NSLog(@"NOTIBLOCK - loading all filters: %lu", (unsigned long)[filters count]);
+    NSLog(@"NOTIBLOCK QWERTYASDF - loading all filters: %lu", (unsigned long)[filters count]);
 
     NSMutableArray *allFilters = [filters objectForKey:@"all"];
     NSMutableArray *appFilters = [filters objectForKey:sectionId];
-    //NSLog(@"%@ and %@", allFilters, appFilters);
+    NSLog(@"%@ and %@", allFilters, appFilters);
 
     if(allFilters == nil) {
         allFilters = [[NSMutableArray alloc] init];
@@ -136,7 +136,7 @@ struct FNBlockResult {
         allFilters = [[allFilters arrayByAddingObjectsFromArray:appFilters] mutableCopy];
     }
 
-    //NSLog(@"NOTIBLOCK - loading relevant filters for --%@--: %lu", sectionId, (unsigned long)[allFilters count]);
+    NSLog(@"NOTIBLOCK QWERTYASDF - loading relevant filters for --%@--: %lu", sectionId, (unsigned long)[allFilters count]);
 
     if(title == nil) {
         title = @"";
@@ -154,7 +154,7 @@ struct FNBlockResult {
         //check for schedule and skip if not inside
         if(filter.onSchedule && ![self areWeCurrentlyInSchedule:filter.startTime arg2:filter.endTime arg3:filter.weekDays]) {
             //not inside schedule, skip
-            //NSLog(@"NOTIBLOCK - schedule was on, but we determined it is not currently active. skipping filter");
+            NSLog(@"NOTIBLOCK QWERTYASDF - schedule was on, but we determined it is not currently active. skipping filter");
             continue;
         }
 
@@ -165,27 +165,27 @@ struct FNBlockResult {
 
         //do filtering
         if(filter.blockType == 0) { //starts with
-            //NSLog(@"NOTIBLOCK - checking if string starts with text");
+            NSLog(@"NOTIBLOCK QWERTYASDF - checking if string starts with text");
             titleMatches = [title hasPrefix:filterText];
             subtitleMatches = [subtitle hasPrefix:filterText];
             messageMatches = [message hasPrefix:filterText];
         } else if(filter.blockType == 1) { //ends with
-            //NSLog(@"NOTIBLOCK - checking if string end with text");
+            NSLog(@"NOTIBLOCK QWERTYASDF - checking if string end with text");
             titleMatches = [title hasSuffix:filterText];
             subtitleMatches = [subtitle hasSuffix:filterText];
             messageMatches = [message hasSuffix:filterText];
         } else if(filter.blockType == 2) { //contains
-            //NSLog(@"NOTIBLOCK - checking if string contains text");
+            NSLog(@"NOTIBLOCK QWERTYASDF - checking if string contains text");
             titleMatches = [title rangeOfString:filterText].location != NSNotFound;
             subtitleMatches = [subtitle rangeOfString:filterText].location != NSNotFound;
             messageMatches = [message rangeOfString:filterText].location != NSNotFound;
         } else if(filter.blockType == 3) { //exact text
-            //NSLog(@"NOTIBLOCK - checking if string matches text");
+            NSLog(@"NOTIBLOCK QWERTYASDF - checking if string matches text");
             titleMatches = [title isEqualToString:filterText];
             subtitleMatches = [subtitle isEqualToString:filterText];
             messageMatches = [message isEqualToString:filterText];
         } else if(filter.blockType == 4) { //regex
-            //NSLog(@"NOTIBLOCK - checking if string matches regex");
+            NSLog(@"NOTIBLOCK QWERTYASDF - checking if string matches regex");
             NSPredicate *notifTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", filterText];
             titleMatches = ![title isEqualToString:@""] && [notifTest evaluateWithObject:title];
             subtitleMatches = ![subtitle isEqualToString:@""] && [notifTest evaluateWithObject:subtitle];
@@ -193,13 +193,13 @@ struct FNBlockResult {
         }
 
         if(filter.blockType == 5 || [self doesMessageMatchFilterType:titleMatches arg2:subtitleMatches arg3:messageMatches arg4:filter.filterType]) {
-            //NSLog(@"NOTIBLOCK - filtering was matched");
-            //NSLog(@"NOTIBLOCK - filtering was matched");
+            NSLog(@"NOTIBLOCK QWERTYASDF - filtering was matched");
+            NSLog(@"NOTIBLOCK QWERTYASDF - filtering was matched");
             filtered = YES;
         }
 
         if(filter.whitelistMode) {
-            //NSLog(@"NOTIBLOCK - whitelist Mode on");
+            NSLog(@"NOTIBLOCK QWERTYASDF - whitelist Mode on");
             filtered = !filtered;
         }
 
